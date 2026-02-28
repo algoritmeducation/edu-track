@@ -22,7 +22,7 @@ export default function GroupCard({ group, teacherName, index = 0, onEdit }) {
                 )}
             </div>
             <div className="gc-name">{group.group}</div>
-            <div className="gc-meta">{teacherName} &nbsp;·&nbsp; {group.time}</div>
+            <div className="gc-meta">{teacherName} &nbsp;·&nbsp; {group.time} &nbsp;·&nbsp; {group.days || 'Every Day'}</div>
             <div className="gc-stats">
                 <div className="stat-box"><div className="stat-lbl">Students</div><div className="stat-val">{group.students}</div></div>
                 <div className="stat-box"><div className="stat-lbl">Total Lessons</div><div className="stat-val">{tl}</div></div>

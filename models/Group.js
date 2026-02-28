@@ -1,15 +1,16 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-  tid:         { type: String, required: true },
-  group:       { type: String, required: true, trim: true },
-  lang:        { type: String, required: true, enum: ['HTML','CSS','JavaScript','React JS','Node JS'] },
-  time:        { type: String, required: true },
-  start:       { type: String, required: true },
-  exam:        { type: String, required: true },
-  students:    { type: Number, required: true, min: 1 },
-  level:       { type: Number, required: true, min: 1 },
+  tid: { type: String, required: true },
+  group: { type: String, required: true, trim: true },
+  lang: { type: String, required: true, enum: ['HTML', 'CSS', 'JavaScript', 'React JS', 'Node JS'] },
+  time: { type: String, required: true },
+  start: { type: String, required: true },
+  exam: { type: String, required: true },
+  students: { type: Number, required: true, min: 1 },
+  level: { type: Number, required: true, min: 1 },
   doneInLevel: { type: Number, default: 0, min: 0 },
+  days: { type: String, enum: ['Every Day', 'Odd Days', 'Even Days'], default: 'Every Day' },
 }, {
   timestamps: true,
   toJSON: {

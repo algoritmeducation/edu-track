@@ -84,7 +84,7 @@ export default function AdminGroups({ token }) {
                             </div>
                             <div className="table-wrap">
                                 <table className="data-table">
-                                    <thead><tr><th>Group</th><th>Language</th><th>Level</th><th>Time</th><th>Start</th><th>Exam</th><th>Students</th><th>Done</th><th>Progress</th></tr></thead>
+                                    <thead><tr><th>Group</th><th>Language</th><th>Level</th><th>Time</th><th>Schedule</th><th>Start</th><th>Exam</th><th>Students</th><th>Done</th><th>Progress</th></tr></thead>
                                     <tbody>{gs.map((g) => <GroupRow key={g.id} group={g} />)}</tbody>
                                 </table>
                             </div>

@@ -16,6 +16,7 @@ export default function GroupRow({ group }) {
                 </span>
             </td>
             <td className="td-m">{group.time}</td>
+            <td className="td-m">{group.days || 'Every Day'}</td>
             <td>{fmtDate(group.start)}</td>
             <td>{fmtDate(group.exam)}</td>
             <td className="td-n">{group.students}</td>

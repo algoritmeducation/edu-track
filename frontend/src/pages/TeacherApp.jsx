@@ -21,6 +21,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
     const [fExam, setFExam] = useState('');
     const [fStudents, setFStudents] = useState('');
     const [fDone, setFDone] = useState('0');
+    const [fDays, setFDays] = useState('Every Day');
     const [selectedStage, setSelectedStage] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
@@ -39,7 +40,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
 
     function resetForm() {
         setFName(''); setFLang(''); setFTime(''); setFStart(''); setFExam('');
-        setFStudents(''); setFDone('0'); setSelectedStage(null); setEditingGroup(null);
+        setFStudents(''); setFDone('0'); setFDays('Every Day'); setSelectedStage(null); setEditingGroup(null);
     }
 
     function closeModal() { setModalOpen(false); resetForm(); }
@@ -53,6 +54,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         setFExam(group.exam.split('T')[0]);
         setFStudents(String(group.students));
         setFDone(String(group.doneInLevel || 0));
+        setFDays(group.days || 'Every Day');
         setSelectedStage(group.level);
         setModalOpen(true);
     }
@@ -76,7 +78,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         try {
             const payload = {
                 group: name, lang: fLang, time: fTime, start: fStart, exam: fExam,
-                students: parseInt(fStudents), level: selectedStage, doneInLevel,
+                students: parseInt(fStudents), level: selectedStage, doneInLevel, days: fDays
             };
             if (editingGroup) {
                 await api('PUT', `/api/groups/${editingGroup.id || editingGroup._id}`, payload, token);
@@ -146,6 +148,14 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                     <div className="f-group">
                         <label className="f-label">Class Time</label>
                         <input className="f-input" type="time" value={fTime} onChange={(e) => setFTime(e.target.value)} />
+                    </div>
+                    <div className="f-group">
+                        <label className="f-label">Schedule</label>
+                        <select className="f-select" value={fDays} onChange={(e) => setFDays(e.target.value)}>
+                            <option value="Every Day">Every Day</option>
+                            <option value="Odd Days">Odd Days</option>
+                            <option value="Even Days">Even Days</option>
+                        </select>
                     </div>
                     {fLang && (
                         <div className="f-group full">
