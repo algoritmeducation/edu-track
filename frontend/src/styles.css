@@ -1401,7 +1401,7 @@ body {
     background: var(--dark);
     border: 1px solid var(--border);
     border-radius: var(--r);
-    overflow: hidden
+    overflow-x: auto;
 }
 
 .data-table {
@@ -1872,7 +1872,22 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 @media(max-width:768px) {
     .app-nav {
-        padding: 0 20px
+        padding: 12px 20px;
+        height: auto;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .nav-tabs {
+        display: flex;
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 2px;
+    }
+
+    .nav-tab {
+        white-space: nowrap;
     }
 
     .panel-header {
@@ -1902,9 +1917,5 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
     .stats-row {
         grid-template-columns: repeat(2, 1fr)
-    }
-
-    .nav-tabs {
-        display: none
     }
 }
