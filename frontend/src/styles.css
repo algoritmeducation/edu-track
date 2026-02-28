@@ -1918,4 +1918,16 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     .stats-row {
         grid-template-columns: repeat(2, 1fr)
     }
+
+    .landing-theme-btn {
+        top: 12px;
+        right: 12px;
+        width: 36px;
+        height: 36px;
+    }
+
+    .landing-theme-btn svg {
+        width: 16px;
+        height: 16px;
+    }
 }
