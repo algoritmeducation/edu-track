@@ -115,6 +115,19 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         if (fStart) calculateExamDate(fStart, val);
     }
 
+    function handleStudentsChange(e) {
+        const val = e.target.value;
+        if (val === '') {
+            setFStudents('');
+            return;
+        }
+        if (!/^\d+$/.test(val)) {
+            showToast('Number of students must be a valid number', true);
+            return;
+        }
+        setFStudents(val);
+    }
+
     async function handleSubmit() {
         const name = fName.trim();
         if (!name || !fLang || !fTime || !fStart || !fExam || !fStudents) {
@@ -247,7 +260,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                     </div>
                     <div className="f-group">
                         <label className="f-label">Number of Students</label>
-                        <input className="f-input" type="number" placeholder="e.g. 20" min="1" value={fStudents} onChange={(e) => setFStudents(e.target.value)} />
+                        <input className="f-input" type="text" inputMode="numeric" placeholder="e.g. 20" value={fStudents} onChange={handleStudentsChange} />
                     </div>
                     <div className="f-group">
                         <label className="f-label">Lessons Done (in this level)</label>
