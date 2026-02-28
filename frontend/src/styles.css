@@ -166,7 +166,7 @@ body * {
 }
 
 .landing-theme-btn {
-    position: fixed;
+    position: absolute;
     top: 20px;
     right: 24px;
     z-index: 999;
