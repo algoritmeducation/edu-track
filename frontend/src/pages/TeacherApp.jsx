@@ -73,8 +73,46 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         }
 
         setFStart(val);
-        if ([1, 3, 5].includes(day)) setFDays('Odd Days');
-        if ([2, 4, 6].includes(day)) setFDays('Even Days');
+        let updatedDays = fDays;
+        if ([1, 3, 5].includes(day)) updatedDays = 'Odd Days';
+        if ([2, 4, 6].includes(day)) updatedDays = 'Even Days';
+        setFDays(updatedDays);
+        calculateExamDate(val, updatedDays);
+    }
+
+    function calculateExamDate(startDateStr, scheduleMode) {
+        if (!startDateStr) {
+            setFExam('');
+            return;
+        }
+
+        const date = new Date(startDateStr);
+        let lessonsCount = 1; // Start date is lesson 1
+
+        while (lessonsCount < LPL) {
+            date.setDate(date.getDate() + 1);
+            const day = date.getDay();
+
+            if (day === 0) continue; // No lessons on Sunday
+
+            if (scheduleMode === 'Even Days' && ![2, 4, 6].includes(day)) continue;
+            if (scheduleMode === 'Odd Days' && ![1, 3, 5].includes(day)) continue;
+
+            // If we fall through to here, it's a valid lesson day based on the schedule, or "Every Day" (Mon-Sat).
+            lessonsCount++;
+        }
+
+        // Format the date output
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        setFExam(`${y}-${m}-${d}`);
+    }
+
+    function handleDaysChange(e) {
+        const val = e.target.value;
+        setFDays(val);
+        if (fStart) calculateExamDate(fStart, val);
     }
 
     async function handleSubmit() {
@@ -197,7 +235,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                     </div>
                     <div className="f-group">
                         <label className="f-label">Schedule</label>
-                        <select className="f-select" value={fDays} onChange={(e) => setFDays(e.target.value)}>
+                        <select className="f-select" value={fDays} onChange={handleDaysChange}>
                             <option value="Every Day">Every Day</option>
                             <option value="Odd Days">Odd Days</option>
                             <option value="Even Days">Even Days</option>
