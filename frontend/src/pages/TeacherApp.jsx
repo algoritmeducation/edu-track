@@ -167,14 +167,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                         <label className="f-label">Class Time</label>
                         <input className="f-input" type="time" value={fTime} onChange={(e) => setFTime(e.target.value)} />
                     </div>
-                    <div className="f-group">
-                        <label className="f-label">Schedule</label>
-                        <select className="f-select" value={fDays} onChange={(e) => setFDays(e.target.value)}>
-                            <option value="Every Day">Every Day</option>
-                            <option value="Odd Days">Odd Days</option>
-                            <option value="Even Days">Even Days</option>
-                        </select>
-                    </div>
+
                     {fLang && (
                         <div className="f-group full">
                             <label className="f-label">Current Level</label>
@@ -201,6 +194,14 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                     <div className="f-group">
                         <label className="f-label">Start Date</label>
                         <input className="f-input" type="date" value={fStart} onChange={handleStartDateChange} />
+                    </div>
+                    <div className="f-group">
+                        <label className="f-label">Schedule</label>
+                        <select className="f-select" value={fDays} onChange={(e) => setFDays(e.target.value)}>
+                            <option value="Every Day">Every Day</option>
+                            <option value="Odd Days">Odd Days</option>
+                            <option value="Even Days">Even Days</option>
+                        </select>
                     </div>
                     <div className="f-group">
                         <label className="f-label">Exam Date</label>
