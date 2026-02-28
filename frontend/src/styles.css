@@ -126,7 +126,7 @@ body.light .toast {
 
 body,
 body * {
-    transition: background-color .25s ease, border-color .25s ease, color .15s ease, box-shadow .25s ease
+    transition: background-color .35s ease-in-out, background .35s ease-in-out, border-color .35s ease-in-out, color .25s ease-in-out, fill .25s ease-in-out, stroke .25s ease-in-out, box-shadow .35s ease-in-out;
 }
 
 .prog-fill,
