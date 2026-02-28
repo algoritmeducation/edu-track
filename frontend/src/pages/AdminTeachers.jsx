@@ -11,8 +11,7 @@ import ConfirmModal from '../components/ConfirmModal';
 export default function AdminTeachers({ token }) {
     const [teachers, setTeachers] = useState(null);
     const [allGroups, setAllGroups] = useState(null);
-    const [fGroups, setFGroups] = useState('All');
-    const [fStudents, setFStudents] = useState('All');
+    const [sortBy, setSortBy] = useState('default');
     const showToast = useToast();
 
     // Teacher modal
@@ -129,21 +128,21 @@ export default function AdminTeachers({ token }) {
 
     const loading = teachers === null || allGroups === null;
 
-    const filteredTeachers = (teachers || []).filter(t => {
-        const mg = (allGroups || []).filter(g => g.tid === t.id);
-        const ts = mg.reduce((a, g) => a + g.students, 0);
+    const sortedTeachers = [...(teachers || [])].sort((a, b) => {
+        if (sortBy === 'default') return 0;
 
-        if (fGroups !== 'All') {
-            const minGroups = parseInt(fGroups);
-            if (mg.length < minGroups) return false;
-        }
+        const mgA = (allGroups || []).filter(g => g.tid === a.id);
+        const tsA = mgA.reduce((acc, g) => acc + g.students, 0);
 
-        if (fStudents !== 'All') {
-            const minStudents = parseInt(fStudents);
-            if (ts < minStudents) return false;
-        }
+        const mgB = (allGroups || []).filter(g => g.tid === b.id);
+        const tsB = mgB.reduce((acc, g) => acc + g.students, 0);
 
-        return true;
+        if (sortBy === 'groups-asc') return mgA.length - mgB.length;
+        if (sortBy === 'groups-desc') return mgB.length - mgA.length;
+        if (sortBy === 'students-asc') return tsA - tsB;
+        if (sortBy === 'students-desc') return tsB - tsA;
+
+        return 0;
     });
 
     return (
@@ -151,18 +150,12 @@ export default function AdminTeachers({ token }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
                 <span className="slabel" style={{ margin: 0 }}>All Teachers</span>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <select className="f-select" style={{ width: 'auto', padding: '8px 30px 8px 16px', fontSize: '13px' }} value={fGroups} onChange={e => setFGroups(e.target.value)}>
-                        <option value="All">All Groups</option>
-                        <option value="1">1+ Groups</option>
-                        <option value="2">2+ Groups</option>
-                        <option value="3">3+ Groups</option>
-                    </select>
-                    <select className="f-select" style={{ width: 'auto', padding: '8px 30px 8px 16px', fontSize: '13px' }} value={fStudents} onChange={e => setFStudents(e.target.value)}>
-                        <option value="All">All Students</option>
-                        <option value="10">10+ Students</option>
-                        <option value="20">20+ Students</option>
-                        <option value="50">50+ Students</option>
-                        <option value="100">100+ Students</option>
+                    <select className="f-select" style={{ width: 'auto', padding: '8px 30px 8px 16px', fontSize: '13px' }} value={sortBy} onChange={e => setSortBy(e.target.value)}>
+                        <option value="default">Sort: Default</option>
+                        <option value="groups-asc">Groups: Min to Max</option>
+                        <option value="groups-desc">Groups: Max to Min</option>
+                        <option value="students-asc">Students: Min to Max</option>
+                        <option value="students-desc">Students: Max to Min</option>
                     </select>
                     <button className="add-btn" onClick={openCreate} style={{ margin: 0 }}>
                         <span className="add-icon">+</span>Create
@@ -171,12 +164,12 @@ export default function AdminTeachers({ token }) {
             </div>
 
             <div className="teachers-grid">
-                {loading ? <Skeleton /> : !filteredTeachers.length ? (
+                {loading ? <Skeleton /> : !sortedTeachers.length ? (
                     <div className="empty-state" style={{ gridColumn: '1/-1' }}>
-                        <div className="empty-line">NO TEACHERS MATCHING FILTER</div>
-                        <p>{!teachers.length ? 'Create your first teacher account above.' : 'Try changing your filter settings.'}</p>
+                        <div className="empty-line">NO TEACHERS</div>
+                        <p>Create your first teacher account above.</p>
                     </div>
-                ) : filteredTeachers.map((t, i) => (
+                ) : sortedTeachers.map((t, i) => (
                     <TeacherCard
                         key={t.id} teacher={t} index={i}
                         groups={(allGroups || []).filter((g) => g.tid === t.id)}
@@ -188,7 +181,7 @@ export default function AdminTeachers({ token }) {
             <div style={{ height: '1px', background: 'var(--border)', margin: '8px 0 40px' }}></div>
             <span className="slabel">Groups by Teacher</span>
 
-            {loading ? <Skeleton /> : (filteredTeachers || []).map((t, i) => {
+            {loading ? <Skeleton /> : (sortedTeachers || []).map((t, i) => {
                 const mg = (allGroups || []).filter((g) => g.tid === t.id);
                 const ts = mg.reduce((a, g) => a + g.students, 0);
                 const ap = mg.length ? Math.round(mg.reduce((a, g) => a + pct(totalDone(g.level, g.doneInLevel), totalLessons(g.lang)), 0) / mg.length) : 0;
