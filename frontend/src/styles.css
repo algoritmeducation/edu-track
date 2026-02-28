@@ -673,7 +673,8 @@ body {
     justify-content: center;
     font-family: var(--fd);
     font-size: 16px;
-    color: var(--yellow)
+    color: var(--yellow);
+    flex-shrink: 0;
 }
 
 .nav-uname {
