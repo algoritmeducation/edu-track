@@ -45,14 +45,6 @@ export default function TeacherLogin({ onBack, onLogin, isLight, onToggle }) {
                 <button className="btn-login" onClick={handleLogin} disabled={loading}>
                     {loading ? 'Signing in...' : 'Sign In to Teacher Panel'}
                 </button>
-                <div className="demo-box">
-                    <div className="demo-title">Demo Teacher Accounts</div>
-                    <div className="demo-row">alisher.n / <span className="demo-val">teacher123</span></div>
-                    <div className="demo-row">malika.y / <span className="demo-val">teacher123</span></div>
-                    <div className="demo-row">bobur.t / <span className="demo-val">teacher123</span></div>
-                    <div className="demo-row">dilnoza.r / <span className="demo-val">teacher123</span></div>
-                    <div className="demo-row">sardor.m / <span className="demo-val">teacher123</span></div>
-                </div>
             </div>
         </div>
     );

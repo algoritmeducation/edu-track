@@ -47,11 +47,6 @@ export default function AdminLogin({ onBack, onLogin, isLight, onToggle }) {
                 <button className="btn-login" onClick={handleLogin} disabled={loading}>
                     {loading ? 'Signing in...' : 'Sign In to Admin Panel'}
                 </button>
-                <div className="demo-box">
-                    <div className="demo-title">Demo Credentials</div>
-                    <div className="demo-row">Username: <span className="demo-val">admin</span></div>
-                    <div className="demo-row">Password: <span className="demo-val">admin111</span></div>
-                </div>
             </div>
         </div>
     );
