@@ -57,6 +57,15 @@ export default function AdminTeachers({ token }) {
         setTmError(false); setModalOpen(true);
     }
 
+    function handleNameChange(e) {
+        let val = e.target.value;
+        if (val.length > 32) {
+            showToast('Teacher name cannot exceed 32 characters', true);
+            val = val.substring(0, 32);
+        }
+        setTmName(val);
+    }
+
     function closeModal() { setModalOpen(false); setEditingId(null); }
 
     async function handleSubmit() {
@@ -195,7 +204,7 @@ export default function AdminTeachers({ token }) {
                 </div>
                 <div className="f-group">
                     <label className="f-label">Full Name</label>
-                    <input className="f-input" type="text" maxLength="32" placeholder="e.g. Alisher Nazarov" value={tmName} onChange={(e) => setTmName(e.target.value)} />
+                    <input className="f-input" type="text" placeholder="e.g. Alisher Nazarov" value={tmName} onChange={handleNameChange} />
                 </div>
                 <div className="f-group">
                     <label className="f-label">Username</label>
