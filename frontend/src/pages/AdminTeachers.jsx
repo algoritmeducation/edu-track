@@ -159,7 +159,7 @@ export default function AdminTeachers({ token }) {
                                     <div style={{ fontSize: '12px', color: 'var(--gray)', fontFamily: 'var(--fm)', marginTop: '2px' }}>@{t.username} &nbsp;·&nbsp; {t.subject}</div>
                                 </div>
                             </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
                                 <div style={{ display: 'flex', gap: '6px' }}>
                                     {langBreak.map((l) => <span key={l} className={'tag tag-' + tagCls(l)} style={{ fontSize: '10px' }}>{l}</span>)}
                                 </div>
