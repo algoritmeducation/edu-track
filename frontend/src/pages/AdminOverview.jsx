@@ -40,7 +40,7 @@ export default function AdminOverview({ token }) {
                     const cfg = PC[l.lang] || { levels: 1 };
                     return (
                         <div key={l.lang} style={{ background: 'var(--dark)', border: '1px solid var(--border)', borderRadius: 'var(--r)', padding: '20px 24px', display: 'flex', alignItems: 'center', gap: '20px', marginBottom: '12px', transition: 'border-color .2s' }}>
-                            <span className={'tag tag-' + tagCls(l.lang)} style={{ fontSize: '13px', padding: '6px 14px' }}>{l.lang}</span>
+                            <span className={'tag tag-' + tagCls(l.lang)} style={{ fontSize: '13px', padding: '6px 14px', width: '110px', textAlign: 'center' }}>{l.lang}</span>
                             <div style={{ flex: 1 }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                                     <span style={{ fontSize: '14px', color: 'var(--gl)' }}>
