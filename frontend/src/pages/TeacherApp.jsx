@@ -134,7 +134,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                 <div className="form-grid">
                     <div className="f-group full">
                         <label className="f-label">Group Name</label>
-                        <input className="f-input" type="text" placeholder="e.g. React Batch 4" value={fName} onChange={(e) => setFName(e.target.value)} />
+                        <input className="f-input" type="text" maxLength="32" placeholder="e.g. React Batch 4" value={fName} onChange={(e) => setFName(e.target.value)} />
                     </div>
                     <div className="f-group">
                         <label className="f-label">Programming Language</label>
