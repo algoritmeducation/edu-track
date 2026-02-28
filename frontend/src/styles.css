@@ -1567,7 +1567,8 @@ body {
     padding: 10px 12px;
     background: var(--dark2);
     border-radius: var(--rsm);
-    font-size: 13px
+    font-size: 13px;
+    flex-wrap: wrap
 }
 
 .tc-group-name {
