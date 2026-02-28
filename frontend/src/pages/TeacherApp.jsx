@@ -59,6 +59,24 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         setModalOpen(true);
     }
 
+    function handleStartDateChange(e) {
+        const val = e.target.value;
+        if (!val) { setFStart(''); return; }
+
+        const date = new Date(val);
+        const day = date.getDay(); // 0: Sun, 1: Mon, 2: Tue, 3: Wed, 4: Thu, 5: Fri, 6: Sat
+
+        if (day === 0) {
+            showToast('Lessons cannot start on Sunday', true);
+            setFStart('');
+            return;
+        }
+
+        setFStart(val);
+        if ([1, 3, 5].includes(day)) setFDays('Odd Days');
+        if ([2, 4, 6].includes(day)) setFDays('Even Days');
+    }
+
     async function handleSubmit() {
         const name = fName.trim();
         if (!name || !fLang || !fTime || !fStart || !fExam || !fStudents) {
@@ -182,7 +200,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                     )}
                     <div className="f-group">
                         <label className="f-label">Start Date</label>
-                        <input className="f-input" type="date" value={fStart} onChange={(e) => setFStart(e.target.value)} />
+                        <input className="f-input" type="date" value={fStart} onChange={handleStartDateChange} />
                     </div>
                     <div className="f-group">
                         <label className="f-label">Exam Date</label>
