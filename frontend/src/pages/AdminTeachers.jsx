@@ -195,7 +195,7 @@ export default function AdminTeachers({ token }) {
                 </div>
                 <div className="f-group">
                     <label className="f-label">Full Name</label>
-                    <input className="f-input" type="text" placeholder="e.g. Alisher Nazarov" value={tmName} onChange={(e) => setTmName(e.target.value)} />
+                    <input className="f-input" type="text" maxLength="32" placeholder="e.g. Alisher Nazarov" value={tmName} onChange={(e) => setTmName(e.target.value)} />
                 </div>
                 <div className="f-group">
                     <label className="f-label">Username</label>
