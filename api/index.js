@@ -29,8 +29,8 @@ const SALT = 10;
 const PC = { HTML: { levels: 1 }, CSS: { levels: 2 }, JavaScript: { levels: 3 }, 'React JS': { levels: 3 }, 'Node JS': { levels: 3 } };
 const LPL = 13;
 const validLangs = Object.keys(PC);
-const ADMIN_USER = process.env.ADMIN_USERNAME || 'admin';
-const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'admin111';
+const ADMIN_USER = process.env.ADMIN_USERNAME || 'moonteek';
+const ADMIN_PASS = process.env.ADMIN_PASSWORD || '702009';
 const issueToken = payload => jwt.sign(payload, SECRET, { expiresIn: '8h' });
 
 function auth(req, res, next) {
