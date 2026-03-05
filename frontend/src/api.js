@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.PROD ? 'https://edu-track-793p.onrender.com' : '';
+const API_BASE = import.meta.env.PROD ? 'https://edu-track-j9gn.onrender.com' : '';
 
 export async function api(method, path, body, token) {
     const opts = {
