@@ -503,6 +503,45 @@ body {
     transition: border-color .2s, box-shadow .2s
 }
 
+.f-input-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.f-input-wrap .f-input {
+    padding-right: 48px;
+}
+
+.f-pwd-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 4px;
+    color: var(--gray);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color .2s;
+}
+
+.f-pwd-toggle:hover {
+    color: var(--white);
+}
+
+.f-pwd-toggle svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
 .f-input::placeholder {
     color: var(--gray)
 }
