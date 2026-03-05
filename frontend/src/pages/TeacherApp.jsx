@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
-import { PC, LPL, VALID_LANGS } from '../constants';
+import { PC, LPL, MODULES } from '../constants';
 import { useToast } from '../components/Toast';
 import Navbar from '../components/Navbar';
 import GroupCard from '../components/GroupCard';
@@ -176,6 +176,14 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
 
     const levels = fLang ? PC[fLang]?.levels || 1 : 0;
 
+    // Determine which courses this teacher can teach (based on their subject/specialization)
+    const teacherSubject = user?.teacher?.subject || '';
+    const teacherCategory = Object.entries(MODULES).find(([, courses]) => courses.includes(teacherSubject))?.[0] || null;
+    // Filtered modules: only show the teacher's category; fallback to all if not found
+    const allowedModules = teacherCategory
+        ? { [teacherCategory]: MODULES[teacherCategory] }
+        : MODULES;
+
     return (
         <div className="view active" id="v-teacher-app">
             <Navbar
@@ -217,10 +225,16 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                         <input className="f-input" type="text" placeholder="e.g. React Batch 4" value={fName} onChange={handleNameChange} />
                     </div>
                     <div className="f-group">
-                        <label className="f-label">Programming Language</label>
+                        <label className="f-label">Module / Subject
+                            {teacherCategory && <span style={{ color: 'var(--yellow)', fontWeight: 400, marginLeft: 8, textTransform: 'none', letterSpacing: 0, fontSize: '10px' }}>({teacherCategory})</span>}
+                        </label>
                         <select className="f-select" value={fLang} onChange={(e) => { setFLang(e.target.value); setSelectedStage(null); }}>
-                            <option value="">Select language</option>
-                            {VALID_LANGS.map((l) => <option key={l}>{l}</option>)}
+                            <option value="">Select subject</option>
+                            {Object.entries(allowedModules).map(([mod, subjs]) => (
+                                <optgroup key={mod} label={mod}>
+                                    {subjs.map(lang => <option key={lang} value={lang}>{lang}</option>)}
+                                </optgroup>
+                            ))}
                         </select>
                     </div>
                     <div className="f-group">

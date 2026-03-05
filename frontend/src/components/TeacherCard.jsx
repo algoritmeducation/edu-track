@@ -12,7 +12,9 @@ export default function TeacherCard({ teacher, groups, index = 0, onEdit, onDele
                 <div className="tc-avatar">{teacher.name.charAt(0)}</div>
                 <div>
                     <div className="tc-name">{teacher.name}</div>
-                    <div className="tc-subject">{teacher.subject}</div>
+                    <div style={{ margin: '3px 0 4px' }}>
+                        <span className={'tag tag-' + tagCls(teacher.subject)} style={{ fontSize: '10px' }}>{teacher.subject}</span>
+                    </div>
                     <div className="tc-username">@{teacher.username}</div>
                 </div>
             </div>

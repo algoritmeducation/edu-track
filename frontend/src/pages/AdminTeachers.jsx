@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
-import { totalDone, totalLessons, pct, tagCls } from '../constants';
+import { totalDone, totalLessons, pct, tagCls, MODULES, VALID_LANGS } from '../constants';
 import { useToast } from '../components/Toast';
 import Skeleton from '../components/Skeleton';
 import TeacherCard from '../components/TeacherCard';
@@ -194,7 +194,11 @@ export default function AdminTeachers({ token }) {
                                 <div className="tg-avatar">{t.name.charAt(0)}</div>
                                 <div>
                                     <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--white)' }}>{t.name}</div>
-                                    <div style={{ fontSize: '12px', color: 'var(--gray)', fontFamily: 'var(--fm)', marginTop: '2px' }}>@{t.username} &nbsp;·&nbsp; {t.subject}</div>
+                                    <div style={{ fontSize: '12px', color: 'var(--gray)', fontFamily: 'var(--fm)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        @{t.username}
+                                        &nbsp;·&nbsp;
+                                        <span className={'tag tag-' + tagCls(t.subject)} style={{ fontSize: '10px' }}>{t.subject}</span>
+                                    </div>
                                 </div>
                             </div>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
@@ -245,8 +249,15 @@ export default function AdminTeachers({ token }) {
                     <input className="f-input" type="password" placeholder={editingId ? 'Leave blank to keep current' : '••••••••'} value={tmPass} onChange={(e) => setTmPass(e.target.value)} />
                 </div>
                 <div className="f-group">
-                    <label className="f-label">Subject / Specialization</label>
-                    <input className="f-input" type="text" placeholder="e.g. React JS" value={tmSubject} onChange={(e) => setTmSubject(e.target.value)} />
+                    <label className="f-label">Course / Specialization</label>
+                    <select className="f-select" value={tmSubject} onChange={(e) => setTmSubject(e.target.value)}>
+                        <option value="">Select a course</option>
+                        {Object.entries(MODULES).map(([cat, courses]) => (
+                            <optgroup key={cat} label={cat}>
+                                {courses.map(c => <option key={c} value={c}>{c}</option>)}
+                            </optgroup>
+                        ))}
+                    </select>
                 </div>
                 <div className="modal-actions">
                     <button className="btn-submit" onClick={handleSubmit} disabled={tmLoading}>

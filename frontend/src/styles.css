@@ -868,6 +868,52 @@ body {
     color: #78c97a
 }
 
+.tag-Python {
+    background: rgba(48, 105, 152, .15);
+    color: #306998
+}
+
+.tag-Scratch {
+    background: rgba(255, 143, 0, .15);
+    color: #ff8f00
+}
+
+.tag-CompLit {
+    background: rgba(76, 175, 80, .15);
+    color: #4caf50
+}
+
+.tag-GraphicDesign {
+    background: rgba(233, 30, 99, .15);
+    color: #e91e63
+}
+
+.tag-CyberSec {
+    background: rgba(96, 125, 139, .15);
+    color: #607d8b
+}
+
+.tag-PythonBack {
+    background: rgba(55, 118, 171, .15);
+    color: #3776ab
+}
+
+.tag-AI {
+    background: rgba(156, 39, 176, .15);
+    color: #9c27b0
+}
+
+.tag-Marketing {
+    background: rgba(244, 67, 54, .15);
+    color: #f44336
+}
+
+.tag-Mobilography {
+    background: rgba(255, 152, 0, .15);
+    color: #ff9800
+}
+
+
 .gc-name {
     font-size: 21px;
     font-weight: 700;

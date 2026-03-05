@@ -1,9 +1,37 @@
 export const PC = {
-    HTML: { levels: 1, color: '#ff6b4a' },
-    CSS: { levels: 2, color: '#6b8fff' },
-    JavaScript: { levels: 3, color: '#f5c518' },
-    'React JS': { levels: 3, color: '#61dafb' },
-    'Node JS': { levels: 3, color: '#78c97a' },
+    // Web Development
+    'HTML': { levels: 1, color: '#ff6b4a', category: 'Web Development' },
+    'CSS': { levels: 2, color: '#6b8fff', category: 'Web Development' },
+    'JavaScript': { levels: 3, color: '#f5c518', category: 'Web Development' },
+    'React JS': { levels: 3, color: '#61dafb', category: 'Web Development' },
+    'Node JS': { levels: 3, color: '#78c97a', category: 'Web Development' },
+    // IT Kids
+    'Python (Kids)': { levels: 3, color: '#306998', category: 'IT Kids' },
+    'Scratch': { levels: 3, color: '#ff8f00', category: 'IT Kids' },
+    // Computer Literacy
+    'Computer Literacy': { levels: 2, color: '#4caf50', category: 'Computer Literacy' },
+    // Graphic Design
+    'Graphic Design': { levels: 6, color: '#e91e63', category: 'Graphic Design' },
+    // Cyber Security
+    'Cyber Security': { levels: 8, color: '#607d8b', category: 'Cyber Security' },
+    // Python Backend
+    'Python Backend': { levels: 9, color: '#3776ab', category: 'Python Backend' },
+    // AI
+    'AI': { levels: 12, color: '#9c27b0', category: 'AI' },
+    // SMM
+    'Marketing': { levels: 2, color: '#f44336', category: 'SMM' },
+    'Mobilography': { levels: 2, color: '#ff9800', category: 'SMM' },
+};
+
+export const MODULES = {
+    'Web Development': ['HTML', 'CSS', 'JavaScript', 'React JS', 'Node JS'],
+    'IT Kids': ['Python (Kids)', 'Scratch'],
+    'Computer Literacy': ['Computer Literacy'],
+    'Graphic Design': ['Graphic Design'],
+    'Cyber Security': ['Cyber Security'],
+    'Python Backend': ['Python Backend'],
+    'AI': ['AI'],
+    'SMM': ['Marketing', 'Mobilography'],
 };
 
 export const LPL = 13;
@@ -13,8 +41,20 @@ export const totalLessons = (lang) => (PC[lang]?.levels || 1) * LPL;
 export const totalDone = (lv, dim) => (lv - 1) * LPL + (dim || 0);
 export const pct = (d, t) => (t ? Math.min(100, Math.round((d / t) * 100)) : 0);
 
-export const tagCls = (lang) =>
-    ({ HTML: 'HTML', CSS: 'CSS', JavaScript: 'JavaScript', 'React JS': 'React', 'Node JS': 'Node' }[lang] || 'HTML');
+export const tagCls = (lang) => {
+    const map = {
+        'HTML': 'HTML', 'CSS': 'CSS', 'JavaScript': 'JavaScript', 'React JS': 'React', 'Node JS': 'Node',
+        'Python (Kids)': 'Python', 'Scratch': 'Scratch',
+        'Computer Literacy': 'CompLit',
+        'Graphic Design': 'GraphicDesign',
+        'Cyber Security': 'CyberSec',
+        'Python Backend': 'PythonBack',
+        'AI': 'AI',
+        'Marketing': 'Marketing',
+        'Mobilography': 'Mobilography',
+    };
+    return map[lang] || 'HTML';
+};
 
 export const fmtDate = (d) => {
     if (!d) return '-';

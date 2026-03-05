@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
-import { totalDone, totalLessons, pct, tagCls } from '../constants';
+import { totalDone, totalLessons, pct, tagCls, MODULES } from '../constants';
 import { useToast } from '../components/Toast';
 import Skeleton from '../components/Skeleton';
 import GroupRow from '../components/GroupRow';
@@ -38,7 +38,6 @@ export default function AdminGroups({ token }) {
         return progFilter === 'not-started' ? p === 0 : progFilter === 'in-progress' ? p > 0 && p < 100 : p === 100;
     });
 
-    const langs = ['all', 'HTML', 'CSS', 'JavaScript', 'React JS', 'Node JS'];
     const progs = [
         { key: 'all', label: 'All' },
         { key: 'not-started', label: 'Not Started (0%)' },
@@ -48,14 +47,17 @@ export default function AdminGroups({ token }) {
 
     return (
         <div className="panel-body">
-            <span className="slabel">Filter by Language</span>
-            <div className="filter-row" id="lang-filter-bar">
-                <span className="filter-label">Program:</span>
-                {langs.map((l) => (
-                    <button key={l} className={'filter-btn' + (langFilter === l ? ' active' : '')} onClick={() => setLangFilter(l)}>
-                        {l === 'all' ? 'All' : l}
-                    </button>
-                ))}
+            <span className="slabel">Filter by Subject</span>
+            <div className="filter-row" id="lang-filter-bar" style={{ alignItems: 'center' }}>
+                <span className="filter-label">Subject:</span>
+                <select className="f-select" style={{ width: 'auto', padding: '8px 30px 8px 16px', fontSize: '13px' }} value={langFilter} onChange={(e) => setLangFilter(e.target.value)}>
+                    <option value="all">All Subjects</option>
+                    {Object.entries(MODULES).map(([mod, subjs]) => (
+                        <optgroup key={mod} label={mod}>
+                            {subjs.map(lang => <option key={lang} value={lang}>{lang}</option>)}
+                        </optgroup>
+                    ))}
+                </select>
             </div>
             <span className="slabel" style={{ marginTop: '8px' }}>Filter by Progress</span>
             <div className="filter-row" id="prog-filter-bar">
@@ -67,31 +69,33 @@ export default function AdminGroups({ token }) {
                 ))}
             </div>
             <span className="slabel" style={{ marginTop: '8px' }}>Groups by Teacher</span>
-            {loading ? <Skeleton /> : !filtered.length ? (
-                <div className="empty-state"><div className="empty-line">NO RESULTS</div><p>No groups match the selected filters.</p></div>
-            ) : (
-                (teachers || []).map((t) => {
-                    const gs = filtered.filter((g) => g.tid === t.id);
-                    if (!gs.length) return null;
-                    return (
-                        <div key={t.id} className="teacher-section">
-                            <div className="teacher-hdr">
-                                <div className="t-avatar">{t.name.charAt(0)}</div>
-                                <div>
-                                    <div className="t-name-big">{t.name}<span className="t-badge">{t.subject}</span></div>
-                                    <div className="t-count">{gs.length} group{gs.length > 1 ? 's' : ''} &nbsp;·&nbsp; {gs.reduce((a, g) => a + g.students, 0)} students</div>
+            {
+                loading ? <Skeleton /> : !filtered.length ? (
+                    <div className="empty-state"><div className="empty-line">NO RESULTS</div><p>No groups match the selected filters.</p></div>
+                ) : (
+                    (teachers || []).map((t) => {
+                        const gs = filtered.filter((g) => g.tid === t.id);
+                        if (!gs.length) return null;
+                        return (
+                            <div key={t.id} className="teacher-section">
+                                <div className="teacher-hdr">
+                                    <div className="t-avatar">{t.name.charAt(0)}</div>
+                                    <div>
+                                        <div className="t-name-big">{t.name}<span className="t-badge">{t.subject}</span></div>
+                                        <div className="t-count">{gs.length} group{gs.length > 1 ? 's' : ''} &nbsp;·&nbsp; {gs.reduce((a, g) => a + g.students, 0)} students</div>
+                                    </div>
+                                </div>
+                                <div className="table-wrap">
+                                    <table className="data-table">
+                                        <thead><tr><th>Group</th><th>Language</th><th>Level</th><th>Time</th><th>Schedule</th><th>Start</th><th>Exam</th><th>Students</th><th>Done</th><th>Progress</th></tr></thead>
+                                        <tbody>{gs.map((g) => <GroupRow key={g.id} group={g} />)}</tbody>
+                                    </table>
                                 </div>
                             </div>
-                            <div className="table-wrap">
-                                <table className="data-table">
-                                    <thead><tr><th>Group</th><th>Language</th><th>Level</th><th>Time</th><th>Schedule</th><th>Start</th><th>Exam</th><th>Students</th><th>Done</th><th>Progress</th></tr></thead>
-                                    <tbody>{gs.map((g) => <GroupRow key={g.id} group={g} />)}</tbody>
-                                </table>
-                            </div>
-                        </div>
-                    );
-                })
-            )}
-        </div>
+                        );
+                    })
+                )
+            }
+        </div >
     );
 }

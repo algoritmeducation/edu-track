@@ -26,7 +26,30 @@ app.use(async (req, _res, next) => {
 
 const SECRET = process.env.JWT_SECRET || 'change-me-in-production';
 const SALT = 10;
-const PC = { HTML: { levels: 1 }, CSS: { levels: 2 }, JavaScript: { levels: 3 }, 'React JS': { levels: 3 }, 'Node JS': { levels: 3 } };
+const PC = {
+  // Web Development
+  'HTML': { levels: 1, category: 'Web Development' },
+  'CSS': { levels: 2, category: 'Web Development' },
+  'JavaScript': { levels: 3, category: 'Web Development' },
+  'React JS': { levels: 3, category: 'Web Development' },
+  'Node JS': { levels: 3, category: 'Web Development' },
+  // IT Kids
+  'Python (Kids)': { levels: 3, category: 'IT Kids' },
+  'Scratch': { levels: 3, category: 'IT Kids' },
+  // Computer Literacy
+  'Computer Literacy': { levels: 2, category: 'Computer Literacy' },
+  // Graphic Design
+  'Graphic Design': { levels: 6, category: 'Graphic Design' },
+  // Cyber Security
+  'Cyber Security': { levels: 8, category: 'Cyber Security' },
+  // Python Backend
+  'Python Backend': { levels: 9, category: 'Python Backend' },
+  // AI
+  'AI': { levels: 12, category: 'AI' },
+  // SMM
+  'Marketing': { levels: 2, category: 'SMM' },
+  'Mobilography': { levels: 2, category: 'SMM' },
+};
 const LPL = 13;
 const validLangs = Object.keys(PC);
 const ADMIN_USER = process.env.ADMIN_USERNAME || 'moonteek';
