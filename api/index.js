@@ -44,6 +44,7 @@ function adminOnly(req, res, next) {
   next();
 }
 
+app.get('/', (_req, res) => res.json({ message: 'EduTrack API Backend is running' }));
 app.get('/api', (_req, res) => res.json({ status: 'ok', message: 'EduTrack API running' }));
 
 app.post('/api/auth/admin', (req, res) => {
