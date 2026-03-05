@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
-import { totalDone, totalLessons, pct, tagCls, MODULES, VALID_LANGS } from '../constants';
+import { totalDone, totalLessons, pct, tagCls, MODULES } from '../constants';
 import { useToast } from '../components/Toast';
 import Skeleton from '../components/Skeleton';
 import TeacherCard from '../components/TeacherCard';
@@ -197,7 +197,7 @@ export default function AdminTeachers({ token }) {
                                     <div style={{ fontSize: '12px', color: 'var(--gray)', fontFamily: 'var(--fm)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         @{t.username}
                                         &nbsp;·&nbsp;
-                                        <span className={'tag tag-' + tagCls(t.subject)} style={{ fontSize: '10px' }}>{t.subject}</span>
+                                        <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 700, fontFamily: 'var(--fm)', background: 'rgba(245,197,24,.12)', color: 'var(--yellow)', border: '1px solid rgba(245,197,24,.25)' }}>{t.subject}</span>
                                     </div>
                                 </div>
                             </div>
@@ -231,7 +231,7 @@ export default function AdminTeachers({ token }) {
                 <div className="modal-hd">
                     <div>
                         <div className="modal-title">{editingId ? 'Edit Teacher Account' : 'Create Teacher Account'}</div>
-                        <div className="modal-sub">{editingId ? 'Update credentials or subject' : 'Set up login credentials and subject'}</div>
+                        <div className="modal-sub">{editingId ? 'Update credentials or specialization' : 'Set up login credentials and specialization'}</div>
                     </div>
                     <button className="modal-close" onClick={closeModal}>×</button>
                 </div>
@@ -249,15 +249,18 @@ export default function AdminTeachers({ token }) {
                     <input className="f-input" type="password" placeholder={editingId ? 'Leave blank to keep current' : '••••••••'} value={tmPass} onChange={(e) => setTmPass(e.target.value)} />
                 </div>
                 <div className="f-group">
-                    <label className="f-label">Course / Specialization</label>
+                    <label className="f-label">Specialization</label>
                     <select className="f-select" value={tmSubject} onChange={(e) => setTmSubject(e.target.value)}>
-                        <option value="">Select a course</option>
-                        {Object.entries(MODULES).map(([cat, courses]) => (
-                            <optgroup key={cat} label={cat}>
-                                {courses.map(c => <option key={c} value={c}>{c}</option>)}
-                            </optgroup>
+                        <option value="">Select specialization</option>
+                        {Object.keys(MODULES).map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
                         ))}
                     </select>
+                    {tmSubject && (
+                        <div style={{ marginTop: '6px', fontSize: '12px', color: 'var(--gray)', fontFamily: 'var(--fm)' }}>
+                            Courses: {(MODULES[tmSubject] || []).join(' · ')}
+                        </div>
+                    )}
                 </div>
                 <div className="modal-actions">
                     <button className="btn-submit" onClick={handleSubmit} disabled={tmLoading}>

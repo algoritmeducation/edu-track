@@ -13,7 +13,7 @@ export default function TeacherCard({ teacher, groups, index = 0, onEdit, onDele
                 <div>
                     <div className="tc-name">{teacher.name}</div>
                     <div style={{ margin: '3px 0 4px' }}>
-                        <span className={'tag tag-' + tagCls(teacher.subject)} style={{ fontSize: '10px' }}>{teacher.subject}</span>
+                        <span style={{ display: 'inline-block', padding: '3px 9px', borderRadius: '6px', fontSize: '10px', fontWeight: 700, fontFamily: 'var(--fm)', letterSpacing: '.5px', background: 'rgba(245,197,24,.12)', color: 'var(--yellow)', border: '1px solid rgba(245,197,24,.25)' }}>{teacher.subject}</span>
                     </div>
                     <div className="tc-username">@{teacher.username}</div>
                 </div>

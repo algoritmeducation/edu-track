@@ -176,11 +176,10 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
 
     const levels = fLang ? PC[fLang]?.levels || 1 : 0;
 
-    // Determine which courses this teacher can teach (based on their subject/specialization)
-    const teacherSubject = user?.teacher?.subject || '';
-    const teacherCategory = Object.entries(MODULES).find(([, courses]) => courses.includes(teacherSubject))?.[0] || null;
-    // Filtered modules: only show the teacher's category; fallback to all if not found
-    const allowedModules = teacherCategory
+    // teacher.subject is now the specialization CATEGORY (e.g. "Web Development")
+    const teacherCategory = user?.teacher?.subject || '';
+    // Filtered modules: only show courses from the teacher's specialization category
+    const allowedModules = MODULES[teacherCategory]
         ? { [teacherCategory]: MODULES[teacherCategory] }
         : MODULES;
 
