@@ -103,8 +103,12 @@ app.get('/api/teachers/me', auth, async (req, res) => {
 
 app.post('/api/teachers', auth, adminOnly, async (req, res) => {
   try {
-    const { name, username, password, subject } = req.body;
-    if (!name || !username || !password || !subject) return res.status(400).json({ error: 'name, username, password, subject required' });
+    const { name, username, password } = req.body;
+    let subject = req.body.subject;
+    // Normalize to array
+    if (typeof subject === 'string') subject = [subject];
+    if (!name || !username || !password || !subject || !subject.length) return res.status(400).json({ error: 'name, username, password, subject required' });
+    if (subject.length > 2) return res.status(400).json({ error: 'Maximum 2 specializations allowed' });
     if (await Teacher.findOne({ username })) return res.status(409).json({ error: 'Username already taken' });
     const teacher = await Teacher.create({ name, username, hash: bcrypt.hashSync(password, SALT), subject });
     res.status(201).json(teacher.toJSON());
@@ -115,10 +119,13 @@ app.put('/api/teachers/:id', auth, adminOnly, async (req, res) => {
   try {
     const teacher = await Teacher.findById(req.params.id).select('+hash');
     if (!teacher) return res.status(404).json({ error: 'Teacher not found' });
-    const { name, username, password, subject } = req.body;
+    const { name, username, password } = req.body;
+    let subject = req.body.subject;
+    if (typeof subject === 'string') subject = [subject];
+    if (subject && subject.length > 2) return res.status(400).json({ error: 'Maximum 2 specializations allowed' });
     if (username && username !== teacher.username && await Teacher.findOne({ username })) return res.status(409).json({ error: 'Username already taken' });
     if (name) teacher.name = name; if (username) teacher.username = username;
-    if (subject) teacher.subject = subject; if (password) teacher.hash = bcrypt.hashSync(password, SALT);
+    if (subject && subject.length) teacher.subject = subject; if (password) teacher.hash = bcrypt.hashSync(password, SALT);
     await teacher.save(); res.json(teacher.toJSON());
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

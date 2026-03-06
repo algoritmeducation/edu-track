@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema({
-  name:     { type: String, required: true, trim: true },
+  name: { type: String, required: true, trim: true },
   username: { type: String, required: true, unique: true, lowercase: true, trim: true },
-  hash:     { type: String, required: true, select: false },
-  subject:  { type: String, required: true, trim: true },
+  hash: { type: String, required: true, select: false },
+  subject: { type: [String], required: true, validate: { validator: v => Array.isArray(v) && v.length >= 1 && v.length <= 2, message: 'Must have 1 or 2 specializations' } },
 }, {
   timestamps: true,
   toJSON: {

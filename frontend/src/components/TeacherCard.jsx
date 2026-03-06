@@ -12,8 +12,10 @@ export default function TeacherCard({ teacher, groups, index = 0, onEdit, onDele
                 <div className="tc-avatar">{teacher.name.charAt(0)}</div>
                 <div>
                     <div className="tc-name">{teacher.name}</div>
-                    <div style={{ margin: '3px 0 4px' }}>
-                        <span style={{ display: 'inline-block', padding: '3px 9px', borderRadius: '6px', fontSize: '10px', fontWeight: 700, fontFamily: 'var(--fm)', letterSpacing: '.5px', background: 'rgba(245,197,24,.12)', color: 'var(--yellow)', border: '1px solid rgba(245,197,24,.25)' }}>{teacher.subject}</span>
+                    <div style={{ margin: '3px 0 4px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        {(Array.isArray(teacher.subject) ? teacher.subject : [teacher.subject]).map(s => (
+                            <span key={s} style={{ display: 'inline-block', padding: '3px 9px', borderRadius: '6px', fontSize: '10px', fontWeight: 700, fontFamily: 'var(--fm)', letterSpacing: '.5px', background: 'rgba(245,197,24,.12)', color: 'var(--yellow)', border: '1px solid rgba(245,197,24,.25)' }}>{s}</span>
+                        ))}
                     </div>
                     <div className="tc-username">@{teacher.username}</div>
                 </div>

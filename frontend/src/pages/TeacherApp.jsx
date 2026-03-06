@@ -185,12 +185,21 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
 
     const levels = fLang ? PC[fLang]?.levels || 1 : 0;
 
-    // teacher.subject is now the specialization CATEGORY (e.g. "Web Development")
-    const teacherCategory = user?.teacher?.subject || '';
-    // Filtered modules: only show courses from the teacher's specialization category
-    const allowedModules = MODULES[teacherCategory]
-        ? { [teacherCategory]: MODULES[teacherCategory] }
+    // teacher.subject is now an array of up to 2 specialization categories
+    const teacherSubjects = Array.isArray(user?.teacher?.subject)
+        ? user.teacher.subject
+        : (user?.teacher?.subject ? [user.teacher.subject] : []);
+
+    // Merge allowed modules from all teacher subjects (1 or 2)
+    const allowedModules = teacherSubjects.length
+        ? teacherSubjects.reduce((acc, cat) => {
+            if (MODULES[cat]) acc[cat] = MODULES[cat];
+            return acc;
+        }, {})
         : MODULES;
+
+    // For display in the label — show both categories if present
+    const teacherCategory = teacherSubjects.join(' + ');
 
     return (
         <div className="view active" id="v-teacher-app">

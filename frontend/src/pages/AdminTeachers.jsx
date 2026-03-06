@@ -20,7 +20,7 @@ export default function AdminTeachers({ token }) {
     const [tmName, setTmName] = useState('');
     const [tmUsername, setTmUsername] = useState('');
     const [tmPass, setTmPass] = useState('');
-    const [tmSubject, setTmSubject] = useState('');
+    const [tmSubjects, setTmSubjects] = useState(['', '']);
     const [tmError, setTmError] = useState(false);
     const [tmLoading, setTmLoading] = useState(false);
 
@@ -48,13 +48,15 @@ export default function AdminTeachers({ token }) {
     }
 
     function openCreate() {
-        setEditingId(null); setTmName(''); setTmUsername(''); setTmPass(''); setTmSubject('');
+        setEditingId(null); setTmName(''); setTmUsername(''); setTmPass(''); setTmSubjects(['', '']);
         setTmError(false); setModalOpen(true);
     }
 
     function openEdit(teacher) {
         setEditingId(teacher.id);
-        setTmName(teacher.name); setTmUsername(teacher.username); setTmPass(''); setTmSubject(teacher.subject);
+        const subs = Array.isArray(teacher.subject) ? teacher.subject : [teacher.subject];
+        setTmName(teacher.name); setTmUsername(teacher.username); setTmPass('');
+        setTmSubjects([subs[0] || '', subs[1] || '']);
         setTmError(false); setModalOpen(true);
     }
 
@@ -70,7 +72,8 @@ export default function AdminTeachers({ token }) {
     function closeModal() { setModalOpen(false); setEditingId(null); }
 
     async function handleSubmit() {
-        if (!tmName.trim() || !tmUsername.trim() || !tmSubject.trim()) {
+        const subjects = tmSubjects.filter(Boolean);
+        if (!tmName.trim() || !tmUsername.trim() || !subjects.length) {
             showToast('Please fill in all fields', true); return;
         }
         if (!editingId && !tmPass) {
@@ -79,13 +82,13 @@ export default function AdminTeachers({ token }) {
         setTmError(false); setTmLoading(true);
         try {
             if (editingId) {
-                const body = { name: tmName.trim(), username: tmUsername.trim(), subject: tmSubject.trim() };
+                const body = { name: tmName.trim(), username: tmUsername.trim(), subject: subjects };
                 if (tmPass) body.password = tmPass;
                 await api('PUT', '/api/teachers/' + editingId, body, token);
                 showToast('Teacher account updated');
             } else {
                 await api('POST', '/api/teachers', {
-                    name: tmName.trim(), username: tmUsername.trim(), password: tmPass, subject: tmSubject.trim(),
+                    name: tmName.trim(), username: tmUsername.trim(), password: tmPass, subject: subjects,
                 }, token);
                 showToast('Teacher account created');
             }
@@ -194,10 +197,12 @@ export default function AdminTeachers({ token }) {
                                 <div className="tg-avatar">{t.name.charAt(0)}</div>
                                 <div>
                                     <div style={{ fontSize: '20px', fontWeight: 700, color: 'var(--white)' }}>{t.name}</div>
-                                    <div style={{ fontSize: '12px', color: 'var(--gray)', fontFamily: 'var(--fm)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <div style={{ fontSize: '12px', color: 'var(--gray)', fontFamily: 'var(--fm)', marginTop: '2px', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                                         @{t.username}
                                         &nbsp;·&nbsp;
-                                        <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 700, fontFamily: 'var(--fm)', background: 'rgba(245,197,24,.12)', color: 'var(--yellow)', border: '1px solid rgba(245,197,24,.25)' }}>{t.subject}</span>
+                                        {(Array.isArray(t.subject) ? t.subject : [t.subject]).map(s => (
+                                            <span key={s} style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '6px', fontSize: '10px', fontWeight: 700, fontFamily: 'var(--fm)', background: 'rgba(245,197,24,.12)', color: 'var(--yellow)', border: '1px solid rgba(245,197,24,.25)' }}>{s}</span>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
@@ -249,16 +254,30 @@ export default function AdminTeachers({ token }) {
                     <input className="f-input" type="password" placeholder={editingId ? 'Leave blank to keep current' : '••••••••'} value={tmPass} onChange={(e) => setTmPass(e.target.value)} />
                 </div>
                 <div className="f-group">
-                    <label className="f-label">Specialization</label>
-                    <select className="f-select" value={tmSubject} onChange={(e) => setTmSubject(e.target.value)}>
+                    <label className="f-label">Specialization 1 <span style={{ color: 'var(--red)' }}>*</span></label>
+                    <select className="f-select" value={tmSubjects[0]} onChange={(e) => setTmSubjects([e.target.value, tmSubjects[1] === e.target.value ? '' : tmSubjects[1]])}>
                         <option value="">Select specialization</option>
                         {Object.keys(MODULES).map(cat => (
                             <option key={cat} value={cat}>{cat}</option>
                         ))}
                     </select>
-                    {tmSubject && (
+                    {tmSubjects[0] && (
                         <div style={{ marginTop: '6px', fontSize: '12px', color: 'var(--gray)', fontFamily: 'var(--fm)' }}>
-                            Courses: {(MODULES[tmSubject] || []).join(' · ')}
+                            Courses: {(MODULES[tmSubjects[0]] || []).join(' · ')}
+                        </div>
+                    )}
+                </div>
+                <div className="f-group">
+                    <label className="f-label">Specialization 2 <span style={{ color: 'var(--gray)', fontWeight: 400, fontSize: '10px', textTransform: 'none', letterSpacing: 0 }}>(optional)</span></label>
+                    <select className="f-select" value={tmSubjects[1]} onChange={(e) => setTmSubjects([tmSubjects[0], e.target.value])} disabled={!tmSubjects[0]}>
+                        <option value="">None</option>
+                        {Object.keys(MODULES).filter(cat => cat !== tmSubjects[0]).map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                    </select>
+                    {tmSubjects[1] && (
+                        <div style={{ marginTop: '6px', fontSize: '12px', color: 'var(--gray)', fontFamily: 'var(--fm)' }}>
+                            Courses: {(MODULES[tmSubjects[1]] || []).join(' · ')}
                         </div>
                     )}
                 </div>
