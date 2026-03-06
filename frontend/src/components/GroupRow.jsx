@@ -15,7 +15,7 @@ export default function GroupRow({ group }) {
                     Lv {group.level}/{cfg.levels}
                 </span>
             </td>
-            <td className="td-m">{group.time}</td>
+            <td className="td-m">{group.startTime || '–'} – {group.endTime || '–'}</td>
             <td className="td-m">{group.days || 'Every Day'}</td>
             <td>{fmtDate(group.start)}</td>
             <td>{fmtDate(group.exam)}</td>

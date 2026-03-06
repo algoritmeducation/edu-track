@@ -16,7 +16,8 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
     // Form state
     const [fName, setFName] = useState('');
     const [fLang, setFLang] = useState('');
-    const [fTime, setFTime] = useState('');
+    const [fStartTime, setFStartTime] = useState('');
+    const [fEndTime, setFEndTime] = useState('');
     const [fStart, setFStart] = useState('');
     const [fExam, setFExam] = useState('');
     const [fStudents, setFStudents] = useState('');
@@ -39,7 +40,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
     }
 
     function resetForm() {
-        setFName(''); setFLang(''); setFTime(''); setFStart(''); setFExam('');
+        setFName(''); setFLang(''); setFStartTime(''); setFEndTime(''); setFStart(''); setFExam('');
         setFStudents(''); setFDone('0'); setFDays('Every Day'); setSelectedStage(null); setEditingGroup(null);
     }
 
@@ -49,7 +50,8 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         setEditingGroup(group);
         setFName(group.group);
         setFLang(group.lang);
-        setFTime(group.time);
+        setFStartTime(group.startTime || '');
+        setFEndTime(group.endTime || '');
         setFStart(group.start.split('T')[0]);
         setFExam(group.exam.split('T')[0]);
         setFStudents(String(group.students));
@@ -139,7 +141,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
 
     async function handleSubmit() {
         const name = fName.trim();
-        if (!name || !fLang || !fTime || !fStart || !fExam || !fStudents) {
+        if (!name || !fLang || !fStartTime || !fEndTime || !fStart || !fExam || !fStudents) {
             showToast('Please fill in all required fields', true); return;
         }
         if (!selectedStage) {
@@ -155,7 +157,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         setSubmitting(true);
         try {
             const payload = {
-                group: name, lang: fLang, time: fTime, start: fStart, exam: fExam,
+                group: name, lang: fLang, startTime: fStartTime, endTime: fEndTime, start: fStart, exam: fExam,
                 students: parseInt(fStudents), level: selectedStage, doneInLevel, days: fDays
             };
             if (editingGroup) {
@@ -237,8 +239,12 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                         </select>
                     </div>
                     <div className="f-group">
-                        <label className="f-label">Class Time</label>
-                        <input className="f-input" type="time" value={fTime} onChange={(e) => setFTime(e.target.value)} />
+                        <label className="f-label">Start Time (24h)</label>
+                        <input className="f-input" type="time" value={fStartTime} onChange={(e) => setFStartTime(e.target.value)} />
+                    </div>
+                    <div className="f-group">
+                        <label className="f-label">End Time (24h)</label>
+                        <input className="f-input" type="time" value={fEndTime} onChange={(e) => setFEndTime(e.target.value)} />
                     </div>
 
                     {fLang && (

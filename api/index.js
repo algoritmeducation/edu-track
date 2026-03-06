@@ -142,9 +142,9 @@ app.get('/api/groups', auth, async (req, res) => {
 
 app.post('/api/groups', auth, async (req, res) => {
   try {
-    let { tid, group, lang, time, start, exam, students, level, doneInLevel, days } = req.body;
+    let { tid, group, lang, startTime, endTime, start, exam, students, level, doneInLevel, days } = req.body;
     if (req.user.role === 'teacher') tid = req.user.tid;
-    if (!group || !lang || !time || !start || !exam || !students || !level || !tid) return res.status(400).json({ error: 'All fields required' });
+    if (!group || !lang || !startTime || !endTime || !start || !exam || !students || !level || !tid) return res.status(400).json({ error: 'All fields required' });
     if (!validLangs.includes(lang)) return res.status(400).json({ error: 'Invalid lang' });
     level = +level; doneInLevel = +(doneInLevel ?? 0);
     const cfg = PC[lang];
@@ -152,7 +152,7 @@ app.post('/api/groups', auth, async (req, res) => {
     if (doneInLevel < 0 || doneInLevel > LPL) return res.status(400).json({ error: 'Invalid doneInLevel' });
     if (new Date(exam) <= new Date(start)) return res.status(400).json({ error: 'exam must be after start' });
     if (req.user.role === 'admin' && !(await Teacher.findById(tid))) return res.status(400).json({ error: 'Invalid tid' });
-    const g = await Group.create({ tid, group, lang, time, start, exam, students: +students, level, doneInLevel, days: days || 'Every Day' });
+    const g = await Group.create({ tid, group, lang, startTime, endTime, start, exam, students: +students, level, doneInLevel, days: days || 'Every Day' });
     res.status(201).json(g.toJSON());
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -163,7 +163,7 @@ app.put('/api/groups/:id', auth, async (req, res) => {
     if (!g) return res.status(404).json({ error: 'Group not found' });
     if (req.user.role === 'teacher' && g.tid !== req.user.tid) return res.status(403).json({ error: 'Forbidden' });
     if (req.body.lang && !validLangs.includes(req.body.lang)) return res.status(400).json({ error: 'Invalid lang' });
-    for (const f of ['group', 'lang', 'time', 'start', 'exam', 'students', 'level', 'doneInLevel', 'days']) if (req.body[f] != null) g[f] = req.body[f];
+    for (const f of ['group', 'lang', 'startTime', 'endTime', 'start', 'exam', 'students', 'level', 'doneInLevel', 'days']) if (req.body[f] != null) g[f] = req.body[f];
     await g.save(); res.json(g.toJSON());
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
