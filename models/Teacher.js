@@ -17,4 +17,6 @@ const schema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.models.Teacher || mongoose.model('Teacher', schema);
+// Always recompile to avoid stale schema caching (e.g. on Render hot restarts)
+if (mongoose.models.Teacher) mongoose.deleteModel('Teacher');
+module.exports = mongoose.model('Teacher', schema);
