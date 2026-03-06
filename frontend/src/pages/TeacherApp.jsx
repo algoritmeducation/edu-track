@@ -7,6 +7,13 @@ import GroupCard from '../components/GroupCard';
 import Skeleton from '../components/Skeleton';
 import Modal from '../components/Modal';
 
+// Generate 30-minute interval time slots in 24h format: 00:00, 00:30, 01:00 ... 23:30
+const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
+    const h = String(Math.floor(i / 2)).padStart(2, '0');
+    const m = i % 2 === 0 ? '00' : '30';
+    return `${h}:${m}`;
+});
+
 export default function TeacherApp({ token, user, isLight, onToggle, onLogout }) {
     const [groups, setGroups] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
@@ -240,11 +247,21 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                     </div>
                     <div className="f-group">
                         <label className="f-label">Start Time (24h)</label>
-                        <input className="f-input" type="time" value={fStartTime} onChange={(e) => setFStartTime(e.target.value)} />
+                        <select className="f-select" value={fStartTime} onChange={(e) => setFStartTime(e.target.value)}>
+                            <option value="">Select start time</option>
+                            {TIME_OPTIONS.map(t => (
+                                <option key={t} value={t}>{t}</option>
+                            ))}
+                        </select>
                     </div>
                     <div className="f-group">
                         <label className="f-label">End Time (24h)</label>
-                        <input className="f-input" type="time" value={fEndTime} onChange={(e) => setFEndTime(e.target.value)} />
+                        <select className="f-select" value={fEndTime} onChange={(e) => setFEndTime(e.target.value)}>
+                            <option value="">Select end time</option>
+                            {TIME_OPTIONS.map(t => (
+                                <option key={t} value={t}>{t}</option>
+                            ))}
+                        </select>
                     </div>
 
                     {fLang && (
