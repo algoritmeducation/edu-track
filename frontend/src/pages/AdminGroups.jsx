@@ -9,6 +9,7 @@ export default function AdminGroups({ token }) {
     const [teachers, setTeachers] = useState(null);
     const [allGroups, setAllGroups] = useState(null);
     const [langFilter, setLangFilter] = useState('all');
+    const [moduleFilter, setModuleFilter] = useState('all');
     const [progFilter, setProgFilter] = useState('all');
     const showToast = useToast();
 
@@ -32,11 +33,22 @@ export default function AdminGroups({ token }) {
     const loading = teachers === null || allGroups === null;
 
     let filtered = allGroups || [];
+    // Module (category) filter
+    if (moduleFilter !== 'all') {
+        const moduleCourses = MODULES[moduleFilter] || [];
+        filtered = filtered.filter((g) => moduleCourses.includes(g.lang));
+    }
+    // Subject (specific course) filter
     if (langFilter !== 'all') filtered = filtered.filter((g) => g.lang === langFilter);
     if (progFilter !== 'all') filtered = filtered.filter((g) => {
         const p = pct(totalDone(g.level, g.doneInLevel), totalLessons(g.lang));
         return progFilter === 'not-started' ? p === 0 : progFilter === 'in-progress' ? p > 0 && p < 100 : p === 100;
     });
+
+    // Subjects available in the subject dropdown: if a module is selected, show only its courses
+    const availableSubjects = moduleFilter !== 'all'
+        ? { [moduleFilter]: MODULES[moduleFilter] }
+        : MODULES;
 
     const progs = [
         { key: 'all', label: 'All' },
@@ -47,28 +59,57 @@ export default function AdminGroups({ token }) {
 
     return (
         <div className="panel-body">
-            <span className="slabel">Filter by Subject</span>
-            <div className="filter-row" id="lang-filter-bar" style={{ alignItems: 'center' }}>
-                <span className="filter-label">Subject:</span>
-                <select className="f-select" style={{ width: 'auto', padding: '8px 30px 8px 16px', fontSize: '13px' }} value={langFilter} onChange={(e) => setLangFilter(e.target.value)}>
-                    <option value="all">All Subjects</option>
-                    {Object.entries(MODULES).map(([mod, subjs]) => (
-                        <optgroup key={mod} label={mod}>
-                            {subjs.map(lang => <option key={lang} value={lang}>{lang}</option>)}
-                        </optgroup>
-                    ))}
-                </select>
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '8px', alignItems: 'flex-start' }}>
+                {/* Module filter */}
+                <div>
+                    <span className="slabel" style={{ marginBottom: '10px' }}>Filter by Module</span>
+                    <div className="filter-row" style={{ marginBottom: 0, flexWrap: 'wrap' }}>
+                        <span className="filter-label">Module:</span>
+                        {[{ key: 'all', label: 'All' }, ...Object.keys(MODULES).map(m => ({ key: m, label: m }))].map(m => (
+                            <button
+                                key={m.key}
+                                className={'filter-btn' + (moduleFilter === m.key ? ' active' : '')}
+                                onClick={() => { setModuleFilter(m.key); setLangFilter('all'); }}
+                            >
+                                {m.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             </div>
-            <span className="slabel" style={{ marginTop: '8px' }}>Filter by Progress</span>
-            <div className="filter-row" id="prog-filter-bar">
-                <span className="filter-label">Progress:</span>
-                {progs.map((p) => (
-                    <button key={p.key} className={'filter-btn' + (progFilter === p.key ? ' active' : '')} onClick={() => setProgFilter(p.key)}>
-                        {p.label}
-                    </button>
-                ))}
+
+            <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '8px', alignItems: 'flex-start' }}>
+                {/* Subject filter */}
+                <div style={{ flex: 1, minWidth: '200px' }}>
+                    <span className="slabel" style={{ marginBottom: '10px' }}>Filter by Subject</span>
+                    <div className="filter-row" id="lang-filter-bar" style={{ alignItems: 'center', marginBottom: 0 }}>
+                        <span className="filter-label">Subject:</span>
+                        <select className="f-select" style={{ width: 'auto', padding: '8px 30px 8px 16px', fontSize: '13px' }} value={langFilter} onChange={(e) => setLangFilter(e.target.value)}>
+                            <option value="all">All Subjects</option>
+                            {Object.entries(availableSubjects).map(([mod, subjs]) => (
+                                <optgroup key={mod} label={mod}>
+                                    {subjs.map(lang => <option key={lang} value={lang}>{lang}</option>)}
+                                </optgroup>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                {/* Progress filter */}
+                <div style={{ flex: 2, minWidth: '280px' }}>
+                    <span className="slabel" style={{ marginBottom: '10px' }}>Filter by Progress</span>
+                    <div className="filter-row" id="prog-filter-bar" style={{ marginBottom: 0 }}>
+                        <span className="filter-label">Progress:</span>
+                        {progs.map((p) => (
+                            <button key={p.key} className={'filter-btn' + (progFilter === p.key ? ' active' : '')} onClick={() => setProgFilter(p.key)}>
+                                {p.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
             </div>
-            <span className="slabel" style={{ marginTop: '8px' }}>Groups by Teacher</span>
+
+            <span className="slabel" style={{ marginTop: '16px' }}>Groups by Teacher</span>
             {
                 loading ? <Skeleton /> : !filtered.length ? (
                     <div className="empty-state"><div className="empty-line">NO RESULTS</div><p>No groups match the selected filters.</p></div>
@@ -81,7 +122,12 @@ export default function AdminGroups({ token }) {
                                 <div className="teacher-hdr">
                                     <div className="t-avatar">{t.name.charAt(0)}</div>
                                     <div>
-                                        <div className="t-name-big">{t.name}<span className="t-badge">{t.subject}</span></div>
+                                        <div className="t-name-big">
+                                            {t.name}
+                                            {(Array.isArray(t.subject) ? t.subject : [t.subject]).map(s => (
+                                                <span key={s} className="t-badge" style={{ marginLeft: '8px' }}>{s}</span>
+                                            ))}
+                                        </div>
                                         <div className="t-count">{gs.length} group{gs.length > 1 ? 's' : ''} &nbsp;·&nbsp; {gs.reduce((a, g) => a + g.students, 0)} students</div>
                                     </div>
                                 </div>
