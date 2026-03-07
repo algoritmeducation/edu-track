@@ -152,6 +152,21 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         setFName(val);
     }
 
+    function handleStartTimeChange(e) {
+        const val = e.target.value;
+        setFStartTime(val);
+        if (!val) return;
+        // IT Kids classes are 1.5 h, everything else is 2 h
+        const isItKids = PC[fLang]?.category === 'IT Kids';
+        const addMinutes = isItKids ? 90 : 120;
+        const [hStr, mStr] = val.split(':');
+        const totalMin = parseInt(hStr) * 60 + parseInt(mStr) + addMinutes;
+        const endH = String(Math.floor(totalMin / 60)).padStart(2, '0');
+        const endM = totalMin % 60 === 0 ? '00' : '30';
+        const endTime = `${endH}:${endM}`;
+        if (TIME_OPTIONS.includes(endTime)) setFEndTime(endTime);
+    }
+
     function handleDaysChange(e) {
         const val = e.target.value;
         setFDays(val);
@@ -281,7 +296,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                     </div>
                     <div className="f-group">
                         <label className="f-label">Start Time (24h)</label>
-                        <select className="f-select" value={fStartTime} onChange={(e) => setFStartTime(e.target.value)}>
+                        <select className="f-select" value={fStartTime} onChange={handleStartTimeChange}>
                             <option value="">Select start time</option>
                             {TIME_OPTIONS.map(t => (
                                 <option key={t} value={t}>{t}</option>
