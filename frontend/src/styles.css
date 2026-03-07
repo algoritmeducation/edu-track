@@ -1429,32 +1429,17 @@ body {
     padding: 26px;
     position: relative;
     overflow: hidden;
-    transition: all .3s ease;
+    transition: border-color .35s ease, box-shadow .35s ease, transform .35s ease;
     animation: fadeU .4s ease both
-}
-
-.group-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--yellow);
-    transform: scaleX(0);
-    transition: transform .3s ease;
-    transform-origin: left
 }
 
 .group-card:hover {
     border-color: var(--yborder);
-    transform: translateY(-3px);
-    box-shadow: 0 12px 48px rgba(0, 0, 0, .55)
+    transform: translateY(-4px);
+    box-shadow: 0 8px 40px rgba(0, 0, 0, .45), 0 0 0 1px var(--yborder)
 }
 
-.group-card:hover::before {
-    transform: scaleX(1)
-}
+
 
 .tag {
     display: inline-block;
