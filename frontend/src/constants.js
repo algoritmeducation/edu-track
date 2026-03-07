@@ -96,6 +96,27 @@ export function autoProgress(group) {
     return { level, doneInLevel, totalDone: clamped };
 }
 
+/**
+ * Compute the exam date (last lesson day) starting from startDateStr,
+ * counting LPL valid lesson days per the schedule. Returns 'YYYY-MM-DD'.
+ */
+export function calcExamDate(startDateStr, scheduleMode) {
+    const date = new Date(startDateStr);
+    let lessonsCount = 1;
+    while (lessonsCount < LPL) {
+        date.setDate(date.getDate() + 1);
+        const day = date.getDay();
+        if (day === 0) continue;
+        if (scheduleMode === 'Even Days' && ![2, 4, 6].includes(day)) continue;
+        if (scheduleMode === 'Odd Days' && ![1, 3, 5].includes(day)) continue;
+        lessonsCount++;
+    }
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
 export const fmtDate = (d) => {
     if (!d) return '-';
     const [y, m, dy] = d.split('-');

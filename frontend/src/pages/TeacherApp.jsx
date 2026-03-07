@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
-import { PC, LPL, MODULES, autoProgress, totalDone, computeElapsedLessons } from '../constants';
+import { PC, LPL, MODULES, autoProgress, totalDone, computeElapsedLessons, calcExamDate } from '../constants';
 import { useToast } from '../components/Toast';
 import Navbar from '../components/Navbar';
 import GroupCard from '../components/GroupCard';
@@ -39,17 +39,37 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         try {
             setGroups(null);
             const data = await api('GET', '/api/groups', null, token);
-            // Auto-sync lesson progress based on calendar
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
             const synced = await Promise.all(data.map(async (g) => {
+                const maxLevels = PC[g.lang]?.levels || 1;
+                const examDate = new Date(g.exam);
+                examDate.setHours(0, 0, 0, 0);
+
+                // Level-up: exam date has passed and group is not at final level
+                if (today > examDate && g.level < maxLevels) {
+                    const newLevel = g.level + 1;
+                    const newStart = g.exam; // new level starts from old exam date
+                    const newExam = calcExamDate(newStart, g.days);
+                    const elapsed = computeElapsedLessons(newStart, g.days);
+                    const newDoneInLevel = Math.min(elapsed, LPL);
+                    try {
+                        const updated = await api('PUT', `/api/groups/${g.id || g._id}`, {
+                            level: newLevel, start: newStart, exam: newExam, doneInLevel: newDoneInLevel
+                        }, token);
+                        return updated;
+                    } catch { return g; }
+                }
+
+                // Normal auto-advance within current level
                 const { level: autoLevel, doneInLevel: autoDone, totalDone: autoTotal } = autoProgress(g);
                 const storedTotal = totalDone(g.level, g.doneInLevel);
                 if (autoTotal > storedTotal) {
                     try {
                         const updated = await api('PUT', `/api/groups/${g.id || g._id}`, { level: autoLevel, doneInLevel: autoDone }, token);
                         return updated;
-                    } catch {
-                        return g; // silently keep old value on error
-                    }
+                    } catch { return g; }
                 }
                 return g;
             }));
