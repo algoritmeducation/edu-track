@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
-import { PC, LPL, MODULES, autoProgress, totalDone } from '../constants';
+import { PC, LPL, MODULES, autoProgress, totalDone, computeElapsedLessons } from '../constants';
 import { useToast } from '../components/Toast';
 import Navbar from '../components/Navbar';
 import GroupCard from '../components/GroupCard';
 import Skeleton from '../components/Skeleton';
 import Modal from '../components/Modal';
 
-// Generate 30-minute interval time slots in 24h format: 00:00, 00:30, 01:00 ... 23:30
+// Time slots 07:00 – 21:00 in 30-minute steps
 const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
-    const h = String(Math.floor(i / 2)).padStart(2, '0');
+    const h = Math.floor(i / 2);
     const m = i % 2 === 0 ? '00' : '30';
-    return `${h}:${m}`;
-});
+    return { h, label: `${String(h).padStart(2, '0')}:${m}` };
+}).filter(({ h }) => h >= 7 && h <= 21).map(({ label }) => label).filter(t => t <= '21:00');
 
 export default function TeacherApp({ token, user, isLight, onToggle, onLogout }) {
     const [groups, setGroups] = useState(null);
@@ -101,6 +101,17 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         if ([2, 4, 6].includes(day)) updatedDays = 'Even Days';
         setFDays(updatedDays);
         calculateExamDate(val, updatedDays);
+
+        // Auto-fill lessons done based on elapsed calendar days
+        const elapsed = computeElapsedLessons(val, updatedDays);
+        if (elapsed > 0) {
+            const maxTotal = fLang ? (PC[fLang]?.levels || 1) * LPL : Infinity;
+            const clamped = Math.min(elapsed, maxTotal);
+            const autoLevel = Math.ceil(clamped / LPL) || 1;
+            const autoDone = clamped - (autoLevel - 1) * LPL;
+            setSelectedStage(autoLevel);
+            setFDone(String(autoDone));
+        }
     }
 
     function calculateExamDate(startDateStr, scheduleMode) {
