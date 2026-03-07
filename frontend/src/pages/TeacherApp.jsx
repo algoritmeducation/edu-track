@@ -187,6 +187,24 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         if (TIME_OPTIONS.includes(endTime)) setFEndTime(endTime);
     }
 
+    function handleLangChange(e) {
+        const lang = e.target.value;
+        setFLang(lang);
+        setSelectedStage(null);
+        // Re-compute level/doneInLevel for the newly selected subject if start is set
+        if (fStart && lang) {
+            const elapsed = computeElapsedLessons(fStart, fDays);
+            if (elapsed > 0) {
+                const maxTotal = (PC[lang]?.levels || 1) * LPL;
+                const clamped = Math.min(elapsed, maxTotal);
+                const autoLevel = Math.ceil(clamped / LPL) || 1;
+                const autoDone = clamped - (autoLevel - 1) * LPL;
+                setSelectedStage(autoLevel);
+                setFDone(String(autoDone));
+            }
+        }
+    }
+
     function handleDaysChange(e) {
         const val = e.target.value;
         setFDays(val);
@@ -305,7 +323,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                         <label className="f-label">Module / Subject
                             {teacherCategory && <span style={{ color: 'var(--yellow)', fontWeight: 400, marginLeft: 8, textTransform: 'none', letterSpacing: 0, fontSize: '10px' }}>({teacherCategory})</span>}
                         </label>
-                        <select className="f-select" value={fLang} onChange={(e) => { setFLang(e.target.value); setSelectedStage(null); }}>
+                        <select className="f-select" value={fLang} onChange={handleLangChange}>
                             <option value="">Select subject</option>
                             {Object.entries(allowedModules).map(([mod, subjs]) => (
                                 <optgroup key={mod} label={mod}>
