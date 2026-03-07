@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
-import { PC, LPL, MODULES } from '../constants';
+import { PC, LPL, MODULES, autoProgress, totalDone } from '../constants';
 import { useToast } from '../components/Toast';
 import Navbar from '../components/Navbar';
 import GroupCard from '../components/GroupCard';
@@ -39,7 +39,21 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         try {
             setGroups(null);
             const data = await api('GET', '/api/groups', null, token);
-            setGroups(data);
+            // Auto-sync lesson progress based on calendar
+            const synced = await Promise.all(data.map(async (g) => {
+                const { level: autoLevel, doneInLevel: autoDone, totalDone: autoTotal } = autoProgress(g);
+                const storedTotal = totalDone(g.level, g.doneInLevel);
+                if (autoTotal > storedTotal) {
+                    try {
+                        const updated = await api('PUT', `/api/groups/${g.id || g._id}`, { level: autoLevel, doneInLevel: autoDone }, token);
+                        return updated;
+                    } catch {
+                        return g; // silently keep old value on error
+                    }
+                }
+                return g;
+            }));
+            setGroups(synced);
         } catch (err) {
             setGroups([]);
             showToast(err.message, true);

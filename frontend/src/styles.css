@@ -1565,6 +1565,20 @@ body {
     border: 1px solid var(--border)
 }
 
+.gc-auto-chip {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--fm);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: #4ade80;
+    background: rgba(74, 222, 128, .08);
+    border: 1px solid rgba(74, 222, 128, .22);
+    padding: 3px 10px;
+    border-radius: 100px;
+    user-select: none
+}
+
 .stat-lbl {
     font-size: 9px;
     color: var(--gray);

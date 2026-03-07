@@ -9,10 +9,13 @@ export default function GroupCard({ group, teacherName, index = 0, onEdit }) {
     return (
         <div className="group-card" style={{ animationDelay: index * 0.06 + 's' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                     <span className={'tag tag-' + tagCls(group.lang)}>{group.lang}</span>
                     <span style={{ fontFamily: 'var(--fm)', fontSize: '11px', color: 'var(--yellow)', background: 'var(--yglow)', padding: '3px 12px', borderRadius: '100px', border: '1px solid var(--yborder)' }}>
                         Level {group.level} / {cfg.levels}
+                    </span>
+                    <span className="gc-auto-chip" title="Lesson count auto-advances based on schedule">
+                        ⟳ Auto
                     </span>
                 </div>
                 {onEdit && (
