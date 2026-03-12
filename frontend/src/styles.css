@@ -719,6 +719,17 @@ body {
     transform: translateY(-2px)
 }
 
+.gc-auto-chip {
+    font-family: var(--fm);
+    font-size: 11px;
+    color: var(--gm);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 3px 10px;
+    border-radius: 100px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    cursor: help;
+}
+
 .lp-bcta-admin {
     background: transparent;
     color: var(--gl);

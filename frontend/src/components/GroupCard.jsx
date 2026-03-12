@@ -14,6 +14,9 @@ export default function GroupCard({ group, teacherName, index = 0, onEdit }) {
                     <span style={{ fontFamily: 'var(--fm)', fontSize: '11px', color: 'var(--yellow)', background: 'var(--yglow)', padding: '3px 12px', borderRadius: '100px', border: '1px solid var(--yborder)' }}>
                         Level {group.level} / {cfg.levels}
                     </span>
+                    <span className="gc-auto-chip" title="Lesson count auto-advances based on schedule">
+                        ⟳ Auto
+                    </span>
                 </div>
                 {onEdit && (
                     <button className="edit-btn" onClick={() => onEdit(group)} style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', cursor: 'pointer', padding: '4px' }}>

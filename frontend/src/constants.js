@@ -56,6 +56,45 @@ export const tagCls = (lang) => {
     return map[lang] || 'HTML';
 };
 
+/**
+ * Count lesson sessions from startDateStr up to and including today,
+ * following the group's Odd/Even/Every Day schedule (Sunday always skipped).
+ */
+export function computeElapsedLessons(startDateStr, daysSchedule) {
+    if (!startDateStr) return 0;
+    const start = new Date(startDateStr);
+    start.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (start > today) return 0;
+    let count = 0;
+    const cursor = new Date(start);
+    while (cursor <= today) {
+        const dow = cursor.getDay(); // 0=Sun,1=Mon,...,6=Sat
+        if (dow !== 0) {
+            if (daysSchedule === 'Odd Days' && [1, 3, 5].includes(dow)) count++;
+            else if (daysSchedule === 'Even Days' && [2, 4, 6].includes(dow)) count++;
+            else if (daysSchedule === 'Every Day') count++;
+        }
+        cursor.setDate(cursor.getDate() + 1);
+    }
+    return count;
+}
+
+/**
+ * Given a group object, compute where it should be today based purely on
+ * the calendar. Returns { level, doneInLevel, totalDone }.
+ * Capped at the course's maximum total lessons.
+ */
+export function autoProgress(group) {
+    const elapsed = computeElapsedLessons(group.start, group.days);
+    const maxTotal = totalLessons(group.lang);
+    const clamped = Math.min(elapsed, maxTotal);
+    if (clamped === 0) return { level: group.level, doneInLevel: group.doneInLevel, totalDone: totalDone(group.level, group.doneInLevel) };
+    const level = Math.ceil(clamped / LPL) || 1;
+    const doneInLevel = clamped - (level - 1) * LPL;
+    return { level, doneInLevel, totalDone: clamped };
+}
 
 /**
  * Compute the exam date (last lesson day) starting from startDateStr,
