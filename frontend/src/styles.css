@@ -300,9 +300,7 @@ body {
 .lp-title-outline {
     background: linear-gradient(to right,
             var(--yellow) 0%,
-            #ff4d4d 25%,
-            #a78bfa 50%,
-            #60a5fa 75%,
+            var(--white) 50%,
             var(--yellow) 100%);
     background-size: 200% auto;
     color: transparent;
