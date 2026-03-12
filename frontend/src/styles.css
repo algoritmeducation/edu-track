@@ -298,9 +298,27 @@ body {
 }
 
 .lp-title-outline {
-    -webkit-text-stroke: 2px var(--yellow);
+    background: linear-gradient(to right,
+            var(--yellow) 0%,
+            #ff4d4d 25%,
+            #a78bfa 50%,
+            #60a5fa 75%,
+            var(--yellow) 100%);
+    background-size: 200% auto;
     color: transparent;
-    font-family: var(--fd)
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: text-shine 4s linear infinite;
+    font-family: var(--fd);
+    display: inline-block;
+    filter: drop-shadow(0 0 12px rgba(245, 197, 24, 0.4));
+}
+
+@keyframes text-shine {
+    to {
+        background-position: 200% center;
+    }
 }
 
 @keyframes lp-slide-up {
