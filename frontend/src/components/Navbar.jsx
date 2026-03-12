@@ -1,6 +1,4 @@
-import ThemeToggle from './ThemeToggle';
-
-export default function Navbar({ isLight, onToggle, user, onLogout, tabs, activeTab, onTabChange }) {
+export default function Navbar({ user, onLogout, tabs, activeTab, onTabChange }) {
     return (
         <nav className="app-nav">
             <div className="nav-logo">EDUTRACK</div>
@@ -19,7 +17,6 @@ export default function Navbar({ isLight, onToggle, user, onLogout, tabs, active
                 </div>
             )}
             <div className="nav-user">
-                <ThemeToggle isLight={isLight} onToggle={onToggle} variant="nav" />
                 <div className="nav-avatar">{user.avatar}</div>
                 <div>
                     <div className="nav-uname">{user.name}</div>

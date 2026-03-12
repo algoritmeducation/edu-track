@@ -10,13 +10,13 @@ const TABS = [
     { key: 'teachers', label: 'Teachers' },
 ];
 
-export default function AdminApp({ token, isLight, onToggle, onLogout }) {
+export default function AdminApp({ token, onLogout }) {
     const [activeTab, setActiveTab] = useState('overview');
 
     return (
         <div className="view active" id="v-admin-app">
             <Navbar
-                isLight={isLight} onToggle={onToggle} onLogout={onLogout}
+                onLogout={onLogout}
                 user={{ avatar: 'A', name: 'Administrator', role: 'Admin Panel' }}
                 tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab}
             />

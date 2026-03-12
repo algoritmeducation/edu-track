@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
-import { PC, LPL, MODULES, autoProgress, totalDone, computeElapsedLessons, calcExamDate } from '../constants';
+import { PC, LPL, MODULES, totalDone, calcExamDate } from '../constants';
 import { useToast } from '../components/Toast';
 import Navbar from '../components/Navbar';
 import GroupCard from '../components/GroupCard';
@@ -14,7 +14,7 @@ const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
     return { h, label: `${String(h).padStart(2, '0')}:${m}` };
 }).filter(({ h }) => h >= 7 && h <= 21).map(({ label }) => label).filter(t => t <= '21:00');
 
-export default function TeacherApp({ token, user, isLight, onToggle, onLogout }) {
+export default function TeacherApp({ token, user, onLogout }) {
     const [groups, setGroups] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [editingGroup, setEditingGroup] = useState(null);
@@ -62,15 +62,6 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
                     } catch { return g; }
                 }
 
-                // Normal auto-advance within current level
-                const { level: autoLevel, doneInLevel: autoDone, totalDone: autoTotal } = autoProgress(g);
-                const storedTotal = totalDone(g.level, g.doneInLevel);
-                if (autoTotal > storedTotal) {
-                    try {
-                        const updated = await api('PUT', `/api/groups/${g.id || g._id}`, { level: autoLevel, doneInLevel: autoDone }, token);
-                        return updated;
-                    } catch { return g; }
-                }
                 return g;
             }));
             setGroups(synced);
@@ -121,17 +112,6 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         if ([2, 4, 6].includes(day)) updatedDays = 'Even Days';
         setFDays(updatedDays);
         calculateExamDate(val, updatedDays);
-
-        // Auto-fill lessons done based on elapsed calendar days
-        const elapsed = computeElapsedLessons(val, updatedDays);
-        if (elapsed > 0) {
-            const maxTotal = fLang ? (PC[fLang]?.levels || 1) * LPL : Infinity;
-            const clamped = Math.min(elapsed, maxTotal);
-            const autoLevel = Math.ceil(clamped / LPL) || 1;
-            const autoDone = clamped - (autoLevel - 1) * LPL;
-            setSelectedStage(autoLevel);
-            setFDone(String(autoDone));
-        }
     }
 
     function calculateExamDate(startDateStr, scheduleMode) {
@@ -191,18 +171,6 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
         const lang = e.target.value;
         setFLang(lang);
         setSelectedStage(null);
-        // Re-compute level/doneInLevel for the newly selected subject if start is set
-        if (fStart && lang) {
-            const elapsed = computeElapsedLessons(fStart, fDays);
-            if (elapsed > 0) {
-                const maxTotal = (PC[lang]?.levels || 1) * LPL;
-                const clamped = Math.min(elapsed, maxTotal);
-                const autoLevel = Math.ceil(clamped / LPL) || 1;
-                const autoDone = clamped - (autoLevel - 1) * LPL;
-                setSelectedStage(autoLevel);
-                setFDone(String(autoDone));
-            }
-        }
     }
 
     function handleDaysChange(e) {
@@ -282,7 +250,7 @@ export default function TeacherApp({ token, user, isLight, onToggle, onLogout })
     return (
         <div className="view active" id="v-teacher-app">
             <Navbar
-                isLight={isLight} onToggle={onToggle} onLogout={onLogout}
+                onLogout={onLogout}
                 user={{ avatar: user.teacher.name.charAt(0), name: user.teacher.name, role: 'Teacher' }}
             />
             <div style={{ flex: 1 }}>

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { api } from '../api';
-import ThemeToggle from '../components/ThemeToggle';
 
-export default function TeacherLogin({ onBack, onLogin, isLight, onToggle }) {
+export default function TeacherLogin({ onBack, onLogin }) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +25,6 @@ export default function TeacherLogin({ onBack, onLogin, isLight, onToggle }) {
 
     return (
         <div className="view active" id="v-teacher-login">
-            <ThemeToggle isLight={isLight} onToggle={onToggle} variant="landing" />
             <div className="login-box">
                 <button className="login-back" onClick={onBack}>← Back</button>
                 <div className="login-icon-wrap">

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import ThemeToggle from '../components/ThemeToggle';
 
 // Animated floating particle
 function Particle({ style }) {
@@ -68,7 +67,7 @@ const PARTICLES = Array.from({ length: 22 }, (_, i) => ({
     animationDelay: `${Math.random() * 8}s`,
 }));
 
-export default function Landing({ onNavigate, isLight, onToggle }) {
+export default function Landing({ onNavigate }) {
     const [scrolled, setScrolled] = useState(false);
     const containerRef = useRef(null);
 
@@ -98,7 +97,6 @@ export default function Landing({ onNavigate, isLight, onToggle }) {
                     EDU<span className="y">TRACK</span>
                 </div>
                 <div className="lp-header-right">
-                    <ThemeToggle isLight={isLight} onToggle={onToggle} variant="landing" />
                 </div>
             </header>
 
