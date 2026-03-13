@@ -24,8 +24,23 @@ export default function GroupRow({ group, onDelete }) {
             <td><LevelBar group={group} mode="table" /></td>
             {onDelete && (
                 <td style={{ textAlign: 'right' }}>
-                    <button className="btn-icon" onClick={() => onDelete(group)} title="Delete Group" style={{ color: 'var(--red)', background: 'rgba(255, 68, 68, 0.1)' }}>
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    <button
+                        onClick={() => onDelete(group)}
+                        title="Delete Group"
+                        style={{
+                            color: 'var(--red)',
+                            background: 'transparent',
+                            border: 'none',
+                            cursor: 'pointer',
+                            padding: '6px',
+                            opacity: 0.5,
+                            transition: 'opacity 0.2s, background 0.2s',
+                            borderRadius: '6px'
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.opacity = 1; e.currentTarget.style.background = 'rgba(255,68,68,0.1)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.opacity = 0.5; e.currentTarget.style.background = 'transparent'; }}
+                    >
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                     </button>
                 </td>
             )}
