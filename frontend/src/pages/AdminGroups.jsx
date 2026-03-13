@@ -4,6 +4,7 @@ import { totalDone, totalLessons, pct, tagCls, MODULES } from '../constants';
 import { useToast } from '../components/Toast';
 import Skeleton from '../components/Skeleton';
 import GroupRow from '../components/GroupRow';
+import ConfirmModal from '../components/ConfirmModal';
 
 export default function AdminGroups({ token }) {
     const [teachers, setTeachers] = useState(null);
@@ -12,6 +13,12 @@ export default function AdminGroups({ token }) {
     const [moduleFilter, setModuleFilter] = useState('all');
     const [progFilter, setProgFilter] = useState('all');
     const showToast = useToast();
+
+    // Delete confirm
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [confirmMsg, setConfirmMsg] = useState('');
+    const [pendingDeleteId, setPendingDeleteId] = useState(null);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => { loadData(); }, []);
 
@@ -56,6 +63,26 @@ export default function AdminGroups({ token }) {
         { key: 'in-progress', label: 'In Progress (1-99%)' },
         { key: 'completed', label: 'Completed (100%)' },
     ];
+
+    function handleDeleteClick(group) {
+        setPendingDeleteId(group.id || group._id);
+        setConfirmMsg(`Delete group <strong>${group.group}</strong> (${group.lang})?<br>This action cannot be undone.`);
+        setConfirmOpen(true);
+    }
+
+    async function handleDelete() {
+        setDeleting(true);
+        try {
+            await api('DELETE', '/api/groups/' + pendingDeleteId, null, token);
+            setConfirmOpen(false); setPendingDeleteId(null);
+            loadData();
+            showToast('Group deleted successfully');
+        } catch (err) {
+            showToast(err.message, true);
+        } finally {
+            setDeleting(false);
+        }
+    }
 
     return (
         <div className="panel-body">
@@ -133,8 +160,8 @@ export default function AdminGroups({ token }) {
                                 </div>
                                 <div className="table-wrap">
                                     <table className="data-table">
-                                        <thead><tr><th>Group</th><th>Language</th><th>Level</th><th>Time</th><th>Schedule</th><th>Start</th><th>Exam</th><th>Students</th><th>Done</th><th>Progress</th></tr></thead>
-                                        <tbody>{gs.map((g) => <GroupRow key={g.id} group={g} />)}</tbody>
+                                        <thead><tr><th>Group</th><th>Language</th><th>Level</th><th>Time</th><th>Schedule</th><th>Start</th><th>Exam</th><th>Students</th><th>Done</th><th>Progress</th><th style={{ textAlign: 'right' }}>Actions</th></tr></thead>
+                                        <tbody>{gs.map((g) => <GroupRow key={g.id || g._id} group={g} onDelete={handleDeleteClick} />)}</tbody>
                                     </table>
                                 </div>
                             </div>
@@ -142,6 +169,14 @@ export default function AdminGroups({ token }) {
                     })
                 )
             }
+
+            <ConfirmModal
+                open={confirmOpen}
+                onClose={() => { setConfirmOpen(false); setPendingDeleteId(null); }}
+                onConfirm={handleDelete}
+                message={confirmMsg}
+                loading={deleting}
+            />
         </div >
     );
 }
