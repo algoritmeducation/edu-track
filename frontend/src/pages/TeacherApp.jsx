@@ -20,6 +20,18 @@ export default function TeacherApp({ token, user, onLogout }) {
     const [editingGroup, setEditingGroup] = useState(null);
     const showToast = useToast();
 
+    const [avail, setAvail] = useState({ oddDays: {}, evenDays: {} });
+    const [savingAvailability, setSavingAvailability] = useState(false);
+
+    useEffect(() => {
+        if (user?.teacher?.availability) {
+            setAvail({
+                oddDays: user.teacher.availability.oddDays || {},
+                evenDays: user.teacher.availability.evenDays || {}
+            });
+        }
+    }, [user]);
+
     // Form state
     const [fName, setFName] = useState('');
     const [fLang, setFLang] = useState('');
@@ -280,6 +292,63 @@ export default function TeacherApp({ token, user, onLogout }) {
     // For display in the label — show both categories if present
     const teacherCategory = teacherSubjects.join(' + ');
 
+    function generateSlots(isItKids) {
+        const slots = [];
+        let currentMin = 8 * 60;
+        const endMin = 20 * 60;
+        const intervalMin = isItKids ? 90 : 120;
+        while (currentMin + intervalMin <= endMin) {
+            const h1 = String(Math.floor(currentMin / 60)).padStart(2, '0');
+            const m1 = String(currentMin % 60).padStart(2, '0');
+            const nextMin = currentMin + intervalMin;
+            const h2 = String(Math.floor(nextMin / 60)).padStart(2, '0');
+            const m2 = String(nextMin % 60).padStart(2, '0');
+            slots.push(`${h1}:${m1}-${h2}:${m2}`);
+            currentMin = nextMin;
+        }
+        return slots;
+    }
+
+    function isOverlapping(slotStr, lessonStart, lessonEnd) {
+        if (!lessonStart || !lessonEnd) return false;
+        const [s1, e1] = slotStr.split('-');
+        const toMins = t => { const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); };
+        return toMins(s1) < toMins(lessonEnd) && toMins(lessonStart) < toMins(e1);
+    }
+
+    const standardSlots = generateSlots(teacherSubjects.includes('IT Kids'));
+    const oddGroups = (groups || []).filter(g => g.days === 'Odd Days' || g.days === 'Every Day');
+    const evenGroups = (groups || []).filter(g => g.days === 'Even Days' || g.days === 'Every Day');
+
+    const getSlotStatus = (dayType, slot) => {
+        const dayGroups = dayType === 'odd' ? oddGroups : evenGroups;
+        const isLesson = dayGroups.some(g => isOverlapping(slot, g.startTime, g.endTime));
+        if (isLesson) return 'Lesson';
+        return avail[dayType === 'odd' ? 'oddDays' : 'evenDays'][slot] || 'Unset';
+    };
+
+    const handleAvailChange = (dayType, slot, status) => {
+        setAvail(prev => ({
+            ...prev,
+            [dayType === 'odd' ? 'oddDays' : 'evenDays']: {
+                ...prev[dayType === 'odd' ? 'oddDays' : 'evenDays'],
+                [slot]: status
+            }
+        }));
+    };
+
+    const saveAvailability = async () => {
+        setSavingAvailability(true);
+        try {
+            await api('PUT', '/api/teachers/me/availability', avail, token);
+            showToast('Schedule saved successfully!');
+        } catch (err) {
+            showToast(err.message, true);
+        } finally {
+            setSavingAvailability(false);
+        }
+    };
+
     return (
         <div className="view active" id="v-teacher-app">
             <Navbar
@@ -305,6 +374,59 @@ export default function TeacherApp({ token, user, onLogout }) {
                         ) : groups.map((g, i) => (
                             <GroupCard key={g.id || g._id} group={g} teacherName={user.teacher.name} index={i} onEdit={() => openEditModal(g)} />
                         ))}
+                    </div>
+                </div>
+
+                <div className="panel-body" style={{ marginTop: '24px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+                        <span className="slabel" style={{ margin: 0 }}>My Schedule</span>
+                        <button className="btn-submit" style={{ padding: '8px 16px', fontSize: '12px', width: 'auto' }} onClick={saveAvailability} disabled={savingAvailability}>
+                            {savingAvailability ? 'Saving...' : 'Save Schedule'}
+                        </button>
+                    </div>
+                    <div className="schedule-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '24px' }}>
+                        <div className="schedule-col">
+                            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--white)', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid var(--border)' }}>Odd Days</div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                {standardSlots.map(slot => {
+                                    const status = getSlotStatus('odd', slot);
+                                    return (
+                                        <div key={slot} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--darker)', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border)', flexWrap: 'wrap', gap: '8px' }}>
+                                            <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--gray)' }}>{slot}</span>
+                                            {status === 'Lesson' ? (
+                                                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--red)', padding: '4px 10px', background: 'rgba(244,67,54,0.1)', borderRadius: '6px' }}>Lesson</span>
+                                            ) : (
+                                                <div style={{ display: 'flex', gap: '4px' }}>
+                                                    <button onClick={() => handleAvailChange('odd', slot, 'Free')} style={{ cursor: 'pointer', background: status === 'Free' ? 'var(--green)' : 'transparent', color: status === 'Free' ? '#111' : 'var(--gray)', border: '1px solid ' + (status === 'Free' ? 'var(--green)' : 'var(--border)'), padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, transition: 'all .2s' }}>Free</button>
+                                                    <button onClick={() => handleAvailChange('odd', slot, 'Busy')} style={{ cursor: 'pointer', background: status === 'Busy' ? 'var(--red)' : 'transparent', color: status === 'Busy' ? '#fff' : 'var(--gray)', border: '1px solid ' + (status === 'Busy' ? 'var(--red)' : 'var(--border)'), padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, transition: 'all .2s' }}>Busy</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                        <div className="schedule-col">
+                            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--white)', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid var(--border)' }}>Even Days</div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                {standardSlots.map(slot => {
+                                    const status = getSlotStatus('even', slot);
+                                    return (
+                                        <div key={slot} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'var(--darker)', padding: '10px 14px', borderRadius: '8px', border: '1px solid var(--border)', flexWrap: 'wrap', gap: '8px' }}>
+                                            <span style={{ fontFamily: 'var(--fm)', fontSize: '13px', color: 'var(--gray)' }}>{slot}</span>
+                                            {status === 'Lesson' ? (
+                                                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--red)', padding: '4px 10px', background: 'rgba(244,67,54,0.1)', borderRadius: '6px' }}>Lesson</span>
+                                            ) : (
+                                                <div style={{ display: 'flex', gap: '4px' }}>
+                                                    <button onClick={() => handleAvailChange('even', slot, 'Free')} style={{ cursor: 'pointer', background: status === 'Free' ? 'var(--green)' : 'transparent', color: status === 'Free' ? '#111' : 'var(--gray)', border: '1px solid ' + (status === 'Free' ? 'var(--green)' : 'var(--border)'), padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, transition: 'all .2s' }}>Free</button>
+                                                    <button onClick={() => handleAvailChange('even', slot, 'Busy')} style={{ cursor: 'pointer', background: status === 'Busy' ? 'var(--red)' : 'transparent', color: status === 'Busy' ? '#fff' : 'var(--gray)', border: '1px solid ' + (status === 'Busy' ? 'var(--red)' : 'var(--border)'), padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, transition: 'all .2s' }}>Busy</button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

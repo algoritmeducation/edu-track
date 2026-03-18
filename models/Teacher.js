@@ -5,6 +5,10 @@ const schema = new mongoose.Schema({
   username: { type: String, required: true, unique: true, lowercase: true, trim: true },
   hash: { type: String, required: true, select: false },
   subject: { type: [String], required: true, validate: { validator: v => Array.isArray(v) && v.length >= 1 && v.length <= 2, message: 'Must have 1 or 2 specializations' } },
+  availability: {
+    oddDays: { type: Map, of: String, default: {} },
+    evenDays: { type: Map, of: String, default: {} },
+  },
 }, {
   timestamps: true,
   toJSON: {

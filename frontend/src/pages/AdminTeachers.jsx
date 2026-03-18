@@ -30,7 +30,16 @@ export default function AdminTeachers({ token }) {
     const [pendingDeleteId, setPendingDeleteId] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
+    // Schedule view
+    const [scheduleOpen, setScheduleOpen] = useState(false);
+    const [scheduleTeacher, setScheduleTeacher] = useState(null);
+
     useEffect(() => { loadData(); }, []);
+
+    function openSchedule(teacher) {
+        setScheduleTeacher(teacher);
+        setScheduleOpen(true);
+    }
 
     async function loadData() {
         try {
@@ -176,7 +185,7 @@ export default function AdminTeachers({ token }) {
                     <TeacherCard
                         key={t.id} teacher={t} index={i}
                         groups={(allGroups || []).filter((g) => g.tid === t.id)}
-                        onEdit={openEdit} onDelete={handleDeleteClick}
+                        onEdit={openEdit} onDelete={handleDeleteClick} onViewSchedule={openSchedule}
                     />
                 ))}
             </div>
@@ -297,6 +306,88 @@ export default function AdminTeachers({ token }) {
                 message={confirmMsg}
                 loading={deleting}
             />
+
+            {/* View Schedule Modal */}
+            {scheduleTeacher && (
+                <Modal open={scheduleOpen} onClose={() => setScheduleOpen(false)} className="" style={{ maxWidth: '640px' }}>
+                    <div className="modal-hd">
+                        <div>
+                            <div className="modal-title">{scheduleTeacher.name}'s Schedule</div>
+                            <div className="modal-sub">Odd and Even Days Availability</div>
+                        </div>
+                        <button className="modal-close" onClick={() => setScheduleOpen(false)}>×</button>
+                    </div>
+                    {(() => {
+                        const subs = Array.isArray(scheduleTeacher.subject) ? scheduleTeacher.subject : [scheduleTeacher.subject];
+                        const isItKids = subs.includes('IT Kids');
+                        const slots = [];
+                        let currentMin = 8 * 60;
+                        const intervalMin = isItKids ? 90 : 120;
+                        while (currentMin + intervalMin <= 20 * 60) {
+                            const h1 = String(Math.floor(currentMin / 60)).padStart(2, '0');
+                            const m1 = String(currentMin % 60).padStart(2, '0');
+                            const nextMin = currentMin + intervalMin;
+                            const h2 = String(Math.floor(nextMin / 60)).padStart(2, '0');
+                            const m2 = String(nextMin % 60).padStart(2, '0');
+                            slots.push(`${h1}:${m1}-${h2}:${m2}`);
+                            currentMin = nextMin;
+                        }
+
+                        const tGroups = (allGroups || []).filter(g => g.tid === scheduleTeacher.id);
+                        const oddGroups = tGroups.filter(g => g.days === 'Odd Days' || g.days === 'Every Day');
+                        const evenGroups = tGroups.filter(g => g.days === 'Even Days' || g.days === 'Every Day');
+
+                        const isOverlapping = (slotStr, gStart, gEnd) => {
+                            if (!gStart || !gEnd) return false;
+                            const [s1, e1] = slotStr.split('-');
+                            const toMins = t => { const [h, m] = t.split(':'); return parseInt(h) * 60 + parseInt(m); };
+                            return toMins(s1) < toMins(gEnd) && toMins(gStart) < toMins(e1);
+                        };
+
+                        const avail = scheduleTeacher.availability || { oddDays: {}, evenDays: {} };
+
+                        const getStatus = (dayType, slot) => {
+                            const dayGroups = dayType === 'odd' ? oddGroups : evenGroups;
+                            if (dayGroups.some(g => isOverlapping(slot, g.startTime, g.endTime))) return 'Lesson';
+                            return avail[dayType === 'odd' ? 'oddDays' : 'evenDays']?.[slot] || 'Unset';
+                        };
+
+                        const renderStatus = status => {
+                            if (status === 'Lesson') return <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--red)', padding: '2px 8px', background: 'rgba(244,67,54,0.1)', borderRadius: '4px' }}>Lesson</span>;
+                            if (status === 'Free') return <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--green)', padding: '2px 8px', background: 'rgba(76,175,80,0.1)', borderRadius: '4px' }}>Free</span>;
+                            if (status === 'Busy') return <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--gray)', padding: '2px 8px', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>Busy</span>;
+                            return <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--gray)', opacity: 0.5 }}>Unset</span>;
+                        };
+
+                        return (
+                            <div className="schedule-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '24px' }}>
+                                <div className="schedule-col">
+                                    <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--white)', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid var(--border)' }}>Odd Days</div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                        {slots.map(slot => (
+                                            <div key={slot} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--darker)', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                                                <span style={{ fontSize: '12px', fontFamily: 'var(--fm)', color: 'var(--gray)' }}>{slot}</span>
+                                                {renderStatus(getStatus('odd', slot))}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="schedule-col">
+                                    <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--white)', marginBottom: '12px', paddingBottom: '8px', borderBottom: '1px solid var(--border)' }}>Even Days</div>
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                        {slots.map(slot => (
+                                            <div key={slot} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 12px', background: 'var(--darker)', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                                                <span style={{ fontSize: '12px', fontFamily: 'var(--fm)', color: 'var(--gray)' }}>{slot}</span>
+                                                {renderStatus(getStatus('even', slot))}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })()}
+                </Modal>
+            )}
         </div>
     );
 }

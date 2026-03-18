@@ -101,6 +101,20 @@ app.get('/api/teachers/me', auth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+app.put('/api/teachers/me/availability', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'teacher') return res.status(403).json({ error: 'Teachers only' });
+    const teacher = await Teacher.findById(req.user.tid);
+    if (!teacher) return res.status(404).json({ error: 'Not found' });
+
+    if (req.body.oddDays) teacher.availability.oddDays = req.body.oddDays;
+    if (req.body.evenDays) teacher.availability.evenDays = req.body.evenDays;
+
+    await teacher.save();
+    res.json(teacher.toJSON());
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 app.post('/api/teachers', auth, adminOnly, async (req, res) => {
   try {
     const { name, username, password } = req.body;

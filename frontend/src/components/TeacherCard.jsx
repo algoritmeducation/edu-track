@@ -1,6 +1,6 @@
 import { PC, LPL, totalDone, totalLessons, pct, tagCls } from '../constants';
 
-export default function TeacherCard({ teacher, groups, index = 0, onEdit, onDelete }) {
+export default function TeacherCard({ teacher, groups, index = 0, onEdit, onDelete, onViewSchedule }) {
     const ts = groups.reduce((a, g) => a + g.students, 0);
     const ap = groups.length
         ? Math.round(groups.reduce((a, g) => a + pct(totalDone(g.level, g.doneInLevel), totalLessons(g.lang)), 0) / groups.length)
@@ -48,6 +48,7 @@ export default function TeacherCard({ teacher, groups, index = 0, onEdit, onDele
                 </div>
             </div>
             <div className="tc-actions">
+                {onViewSchedule && <button className="btn-sm" style={{ background: 'var(--darker)', color: 'var(--white)' }} onClick={() => onViewSchedule(teacher)}>Schedule</button>}
                 <button className="btn-sm btn-sm-yellow" onClick={() => onEdit(teacher)}>Edit</button>
                 <button className="btn-sm btn-sm-red" onClick={() => onDelete(teacher, groups.length)}>Delete</button>
             </div>
