@@ -3,11 +3,13 @@ import Navbar from '../components/Navbar';
 import AdminOverview from './AdminOverview';
 import AdminGroups from './AdminGroups';
 import AdminTeachers from './AdminTeachers';
+import AdminSchedule from './AdminSchedule';
 
 const TABS = [
     { key: 'overview', label: 'Overview' },
     { key: 'groups', label: 'All Groups' },
     { key: 'teachers', label: 'Teachers' },
+    { key: 'schedule', label: 'Schedule' },
 ];
 
 export default function AdminApp({ token, onLogout }) {
@@ -46,6 +48,15 @@ export default function AdminApp({ token, onLogout }) {
                             <div className="panel-subtitle">Create, manage teacher accounts and view their groups</div>
                         </div>
                         <AdminTeachers token={token} />
+                    </div>
+                )}
+                {activeTab === 'schedule' && (
+                    <div className="panel active" id="apanel-schedule">
+                        <div className="panel-header">
+                            <div className="panel-title">TEACHER <span className="y">SCHEDULE</span></div>
+                            <div className="panel-subtitle">Comprehensive overview of all teachers' availability and lessons</div>
+                        </div>
+                        <AdminSchedule token={token} />
                     </div>
                 )}
             </div>

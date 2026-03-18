@@ -2548,3 +2548,51 @@ input[type="time"]::-webkit-calendar-picker-indicator {
         padding: 28px 24px;
     }
 }
+/* -----------------------------------------------------------------
+   ADMIN SCHEDULE TABLE (Excel-like)
+   ----------------------------------------------------------------- */
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--fm);
+  font-size: 11px;
+  table-layout: fixed;
+}
+.schedule-table th, .schedule-table td {
+  border: 1px solid var(--border);
+  padding: 4px 6px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.schedule-table thead th {
+  background: var(--darker);
+  color: var(--white);
+  font-weight: 700;
+  text-align: center;
+}
+.sch-th-name { width: 140px; }
+.sch-th-sm { width: 30px; }
+.sch-th-time { background: rgba(255,255,255,0.05); color: var(--gray); font-weight: 600; }
+.sch-category-row td {
+  background: rgba(255,255,255,0.08);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  padding: 6px;
+}
+.sch-teacher-row:nth-child(even) {
+  background: rgba(255,255,255,0.02);
+}
+.sch-idx { color: var(--gray); margin-right: 4px; }
+.sch-cell-name { font-weight: 600; color: var(--white); }
+.sch-cell-center { text-align: center; color: var(--white); }
+.sch-cell { text-align: center; font-weight: 600; color: #111; }
+.sch-lesson { background-color: #fce4ec; color: #d32f2f; }
+.sch-free { background-color: #e8f5e9; color: #2e7d32; }
+.sch-busy { background-color: #fff3e0; color: #e65100; }
+.sch-unset { background-color: transparent; color: var(--gray); font-weight: 400; }
+.sch-pad { background-color: rgba(255,255,255,0.02); }
+
