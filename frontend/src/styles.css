@@ -1,29 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
 
 :root {
-    --black: #000;
-    --dark: #0f0f0f;
-    --dark2: #161616;
-    --dark3: #1e1e1e;
-    --dark4: #252525;
+    --black: #010409;
+    --dark: #0d1117;
+    --dark2: #161b22;
+    --dark3: #21262d;
+    --dark4: #30363d;
     --yellow: #f5c518;
     --yellow-b: #ffd740;
     --yellow-d: #c9a200;
     --yglow: rgba(245, 197, 24, .12);
     --yborder: rgba(245, 197, 24, .25);
-    --white: #fff;
-    --gray: #777;
-    --gm: #999;
-    --gl: #bbb;
-    --border: rgba(255, 255, 255, .07);
-    --border2: rgba(255, 255, 255, .13);
-    --red: #ff4d4d;
+
+    /* IDE Syntax Colors */
+    --syn-keyword: #ff7b72;
+    --syn-func: #d2a8ff;
+    --syn-str: #a5d6ff;
+    --syn-comment: #8b949e;
+    --syn-var: #79c0ff;
+    --syn-operator: #c9d1d9;
+    --syn-class: #f0883e;
+
+    --white: #c9d1d9;
+    --gray: #8b949e;
+    --gm: #6e7681;
+    --gl: #8b949e;
+    --border: rgba(240, 246, 252, .1);
+    --border2: rgba(240, 246, 252, .2);
+    --red: #ff7b72;
     --r: 18px;
     --rsm: 10px;
     --rxs: 6px;
-    --fd: 'Bebas Neue', sans-serif;
-    --fb: 'DM Sans', sans-serif;
-    --fm: 'DM Mono', monospace;
+    --fd: 'Fira Code', monospace;
+    --fb: 'Fira Code', monospace;
+    --fm: 'Fira Code', monospace;
     --nh: 62px
 }
 
@@ -2548,51 +2558,229 @@ input[type="time"]::-webkit-calendar-picker-indicator {
         padding: 28px 24px;
     }
 }
+
 /* -----------------------------------------------------------------
    ADMIN SCHEDULE TABLE (Excel-like)
    ----------------------------------------------------------------- */
 .schedule-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-family: var(--fm);
-  font-size: 11px;
-  table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--fm);
+    font-size: 11px;
+    table-layout: fixed;
 }
-.schedule-table th, .schedule-table td {
-  border: 1px solid var(--border);
-  padding: 4px 6px;
-  text-align: left;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.schedule-table thead th {
-  background: var(--darker);
-  color: var(--white);
-  font-weight: 700;
-  text-align: center;
-}
-.sch-th-name { width: 140px; }
-.sch-th-sm { width: 30px; }
-.sch-th-time { background: rgba(255,255,255,0.05); color: var(--gray); font-weight: 600; }
-.sch-category-row td {
-  background: rgba(255,255,255,0.08);
-  color: var(--white);
-  font-size: 13px;
-  font-weight: 700;
-  text-align: center;
-  padding: 6px;
-}
-.sch-teacher-row:nth-child(even) {
-  background: rgba(255,255,255,0.02);
-}
-.sch-idx { color: var(--gray); margin-right: 4px; }
-.sch-cell-name { font-weight: 600; color: var(--white); }
-.sch-cell-center { text-align: center; color: var(--white); }
-.sch-cell { text-align: center; font-weight: 600; color: #111; }
-.sch-lesson { background-color: #fce4ec; color: #d32f2f; }
-.sch-free { background-color: #e8f5e9; color: #2e7d32; }
-.sch-busy { background-color: #fff3e0; color: #e65100; }
-.sch-unset { background-color: transparent; color: var(--gray); font-weight: 400; }
-.sch-pad { background-color: rgba(255,255,255,0.02); }
 
+.schedule-table th,
+.schedule-table td {
+    border: 1px solid var(--border);
+    padding: 4px 6px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.schedule-table thead th {
+    background: var(--darker);
+    color: var(--white);
+    font-weight: 700;
+    text-align: center;
+}
+
+.sch-th-name {
+    width: 140px;
+}
+
+.sch-th-sm {
+    width: 30px;
+}
+
+.sch-th-time {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--gray);
+    font-weight: 600;
+}
+
+.sch-category-row td {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--white);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    padding: 6px;
+}
+
+.sch-teacher-row:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.sch-idx {
+    color: var(--gray);
+    margin-right: 4px;
+}
+
+.sch-cell-name {
+    font-weight: 600;
+    color: var(--white);
+}
+
+.sch-cell-center {
+    text-align: center;
+    color: var(--white);
+}
+
+.sch-cell {
+    text-align: center;
+    font-weight: 600;
+    color: #111;
+}
+
+.sch-lesson {
+    background-color: #fce4ec;
+    color: #d32f2f;
+}
+
+.sch-free {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.sch-busy {
+    background-color: #fff3e0;
+    color: #e65100;
+}
+
+.sch-unset {
+    background-color: transparent;
+    color: var(--gray);
+    font-weight: 400;
+}
+
+.sch-pad {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* ============================================================
+   IDE & CODING THEME UTILITIES
+   ============================================================ */
+
+.syn-keyword {
+    color: var(--syn-keyword);
+    font-weight: 500;
+}
+
+.syn-func {
+    color: var(--syn-func);
+}
+
+.syn-str {
+    color: var(--syn-str);
+}
+
+.syn-var {
+    color: var(--syn-var);
+}
+
+.syn-operator {
+    color: var(--syn-operator);
+}
+
+.syn-class {
+    color: var(--syn-class);
+}
+
+.syn-comment {
+    color: var(--syn-comment);
+    font-style: italic;
+}
+
+.ide-window {
+    background: var(--dark2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    text-align: left;
+}
+
+.ide-header {
+    background: var(--dark3);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border2);
+}
+
+.ide-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.ide-dot.red {
+    background: #ff5f56;
+}
+
+.ide-dot.yellow {
+    background: #ffbd2e;
+}
+
+.ide-dot.green {
+    background: #27c93f;
+}
+
+.ide-title {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 12px;
+    color: var(--gm);
+    font-family: var(--fm);
+    transform: translateX(-24px);
+}
+
+.ide-content {
+    padding: 24px;
+    font-family: var(--fm);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--white);
+    background: var(--dark);
+}
+
+/* Typing Effect */
+.typing-wrapper {
+    display: inline-flex;
+}
+
+.typing-effect {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid var(--syn-var);
+    animation: typing 3s steps(40, end), blink-caret .75s step-end infinite;
+}
+
+@keyframes typing {
+    from {
+        width: 0
+    }
+
+    to {
+        width: 100%
+    }
+}
+
+@keyframes blink-caret {
+
+    0%,
+    100% {
+        border-color: transparent
+    }
+
+    50% {
+        border-color: var(--syn-var)
+    }
+}
