@@ -69,19 +69,26 @@ export default function AdminSchedule({ token }) {
         return toMins(s1) < toMins(gEnd) && toMins(gStart) < toMins(e1);
     };
 
-    const renderCell = (dayType, teacher, teacherSlots, teacherGroups) => {
+    const renderChip = (dayType, teacher, teacherSlots, teacherGroups) => {
         const avail = teacher.availability || { oddDays: {}, evenDays: {} };
         const dayGroups = teacherGroups.filter(g => g.days === (dayType === 'odd' ? 'Odd Days' : 'Even Days') || g.days === 'Every Day');
 
-        return teacherSlots.map((slot, idx) => {
+        return teacherSlots.map((slot) => {
             const hasLesson = dayGroups.some(g => isOverlapping(slot, g.startTime, g.endTime));
-            if (hasLesson) {
-                return <td key={idx} className="sch-cell sch-lesson">Lesson</td>;
-            }
-            const status = avail[dayType === 'odd' ? 'oddDays' : 'evenDays']?.[slot] || 'Unset';
-            if (status === 'Free') return <td key={idx} className="sch-cell sch-free">Free</td>;
-            if (status === 'Busy') return <td key={idx} className="sch-cell sch-busy">Busy</td>;
-            return <td key={idx} className="sch-cell sch-unset">-</td>;
+            let status = avail[dayType === 'odd' ? 'oddDays' : 'evenDays']?.[slot] || 'Unset';
+            if (hasLesson) status = 'Lesson';
+
+            let bg = 'rgba(255,255,255,0.05)', color = 'var(--gray)', borderColor = 'var(--border)';
+            if (status === 'Lesson') { bg = 'rgba(244,67,54,0.1)'; color = 'var(--red)'; borderColor = 'rgba(244,67,54,0.2)'; }
+            else if (status === 'Free') { bg = 'rgba(76,175,80,0.1)'; color = 'var(--green)'; borderColor = 'rgba(76,175,80,0.2)'; }
+            else if (status === 'Busy') { bg = 'rgba(255,255,255,0.05)'; color = 'var(--gray)'; borderColor = 'var(--border)'; }
+
+            return (
+                <div key={slot} style={{ background: bg, border: `1px solid ${borderColor}`, padding: '6px 10px', borderRadius: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', minWidth: '94px' }}>
+                    <span style={{ fontSize: '11px', fontFamily: 'var(--fm)', color: 'var(--gray)', fontWeight: 400 }}>{slot}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color }}>{status}</span>
+                </div>
+            );
         });
     };
 
@@ -104,69 +111,70 @@ export default function AdminSchedule({ token }) {
 
     return (
         <div className="panel-body">
-            <div style={{ overflowX: 'auto', paddingBottom: '24px' }}>
-                <table className="schedule-table">
-                    <thead>
-                        <tr>
-                            <th rowSpan="2" className="sch-th-name">Ism / Familiya</th>
-                            <th rowSpan="2" className="sch-th-sm">Gr</th>
-                            <th rowSpan="2" className="sch-th-sm">Fr</th>
-                            <th colSpan="8" className="sch-th-group" style={{ background: '#4caf50', color: '#fff' }}>Dush-Chor-Jum (Odd Days)</th>
-                            <th colSpan="8" className="sch-th-group" style={{ background: '#2196f3', color: '#fff' }}>Sesh-Pay-Shan (Even Days)</th>
-                            <th rowSpan="2" className="sch-th-sm">Shift</th>
-                        </tr>
-                        <tr>
-                            {/* Generic Headers for Odd */}
-                            <th className="sch-th-time">Sl 1</th><th className="sch-th-time">Sl 2</th><th className="sch-th-time">Sl 3</th><th className="sch-th-time">Sl 4</th><th className="sch-th-time">Sl 5</th><th className="sch-th-time">Sl 6</th><th className="sch-th-time">Sl 7</th><th className="sch-th-time">Sl 8</th>
-                            {/* Generic Headers for Even */}
-                            <th className="sch-th-time">Sl 1</th><th className="sch-th-time">Sl 2</th><th className="sch-th-time">Sl 3</th><th className="sch-th-time">Sl 4</th><th className="sch-th-time">Sl 5</th><th className="sch-th-time">Sl 6</th><th className="sch-th-time">Sl 7</th><th className="sch-th-time">Sl 8</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {allSubjects.map((subject) => {
-                            const subjTeachers = groupedTeachers[subject] || [];
-                            return (
-                                <React.Fragment key={subject}>
-                                    <tr className="sch-category-row">
-                                        <td colSpan="20" className="sch-category-cell">{subject}</td>
-                                    </tr>
-                                    {subjTeachers.map((t, index) => {
-                                        const tGroups = groups.filter(g => g.tid === t.id);
-                                        const subs = Array.isArray(t.subject) ? t.subject : [t.subject];
-                                        const strictlyItKids = subs.length > 0 && subs.every(s => s === 'IT Kids');
-                                        const tSlots = generateSlots(strictlyItKids);
-                                        const freeSlotsCount = countFree(t, tSlots, tGroups);
+            {allSubjects.map((subject) => {
+                const subjTeachers = groupedTeachers[subject] || [];
+                return (
+                    <div key={subject} style={{ marginBottom: '40px' }}>
+                        <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--white)', marginBottom: '16px', borderBottom: '1px solid var(--border)', paddingBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span>{subject}</span>
+                            <span style={{ fontSize: '12px', fontWeight: 400, color: 'var(--gray)', background: 'var(--darker)', padding: '4px 10px', borderRadius: '12px' }}>{subjTeachers.length} teachers</span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            {subjTeachers.map((t) => {
+                                const tGroups = groups.filter(g => g.tid === t.id);
+                                const subs = Array.isArray(t.subject) ? t.subject : [t.subject];
+                                const strictlyItKids = subs.length > 0 && subs.every(s => s === 'IT Kids');
+                                const tSlots = generateSlots(strictlyItKids);
+                                const freeSlotsCount = countFree(t, tSlots, tGroups);
 
-                                        // Pad empty cells up to 8 max slots for display alignment
-                                        const maxRenderSlots = 8;
-                                        const oddCells = renderCell('odd', t, tSlots, tGroups);
-                                        const evenCells = renderCell('even', t, tSlots, tGroups);
+                                return (
+                                    <div key={t.id} style={{ background: 'var(--darker)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px' }}>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '16px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--white)', fontWeight: 600, fontSize: '16px' }}>
+                                                    {t.name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <div style={{ color: 'var(--white)', fontWeight: 600, fontSize: '15px' }}>{t.name}</div>
+                                                    <div style={{ fontSize: '12px', color: 'var(--gray)', fontFamily: 'var(--fm)' }}>@{t.username}</div>
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '20px' }}>
+                                                <div style={{ textAlign: 'center' }}>
+                                                    <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--white)' }}>{tGroups.length}</div>
+                                                    <div style={{ fontSize: '11px', color: 'var(--gray)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Groups</div>
+                                                </div>
+                                                <div style={{ textAlign: 'center' }}>
+                                                    <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--green)' }}>{freeSlotsCount}</div>
+                                                    <div style={{ fontSize: '11px', color: 'var(--gray)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Free Slots</div>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                        while (oddCells.length < maxRenderSlots) oddCells.push(<td key={'p-o-' + oddCells.length} className="sch-cell sch-unset sch-pad"></td>);
-                                        while (evenCells.length < maxRenderSlots) evenCells.push(<td key={'p-e-' + evenCells.length} className="sch-cell sch-unset sch-pad"></td>);
-
-                                        return (
-                                            <tr key={t.id} className="sch-teacher-row">
-                                                <td className="sch-cell-name">
-                                                    <span className="sch-idx">{index + 1}</span> {t.name}
-                                                </td>
-                                                <td className="sch-cell-center">{tGroups.length}</td>
-                                                <td className="sch-cell-center">{freeSlotsCount}</td>
-                                                {oddCells}
-                                                {evenCells}
-                                                <td className="sch-cell-center">Full</td>
-                                            </tr>
-                                        );
-                                    })}
-                                </React.Fragment>
-                            );
-                        })}
-                        {allSubjects.length === 0 && (
-                            <tr><td colSpan="20" style={{ textAlign: 'center', padding: '16px' }}>No teachers active</td></tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)', gap: '24px' }}>
+                                            <div>
+                                                <div style={{ fontSize: '12px', color: 'var(--gray)', fontWeight: 600, marginBottom: '12px', letterSpacing: '0.5px' }}>ODD DAYS (Mon, Wed, Fri)</div>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                                    {renderChip('odd', t, tSlots, tGroups)}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: '12px', color: 'var(--gray)', fontWeight: 600, marginBottom: '12px', letterSpacing: '0.5px' }}>EVEN DAYS (Tue, Thu, Sat)</div>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                                    {renderChip('even', t, tSlots, tGroups)}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                );
+            })}
+            {allSubjects.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '32px', color: 'var(--gray)' }}>No teachers active</div>
+            )}
         </div>
     );
 }
