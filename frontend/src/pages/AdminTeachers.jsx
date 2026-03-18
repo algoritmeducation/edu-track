@@ -319,10 +319,10 @@ export default function AdminTeachers({ token }) {
                     </div>
                     {(() => {
                         const subs = Array.isArray(scheduleTeacher.subject) ? scheduleTeacher.subject : [scheduleTeacher.subject];
-                        const isItKids = subs.includes('IT Kids');
+                        const isStrictlyItKids = subs.length > 0 && subs.every(s => s === 'IT Kids');
                         const slots = [];
                         let currentMin = 8 * 60;
-                        const intervalMin = isItKids ? 90 : 120;
+                        const intervalMin = isStrictlyItKids ? 90 : 120;
                         while (currentMin + intervalMin <= 20 * 60) {
                             const h1 = String(Math.floor(currentMin / 60)).padStart(2, '0');
                             const m1 = String(currentMin % 60).padStart(2, '0');
