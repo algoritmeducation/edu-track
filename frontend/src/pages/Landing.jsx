@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 
-const CODE_SNIPPETS = ['{', '}', '0', '1', ';', '=>', '()', '/>', '<'];
 // Animated floating particle
-function Particle({ style, text }) {
-    return <div className="lp-particle" style={style}>{text}</div>;
+function Particle({ style }) {
+    return <div className="lp-particle" style={style} />;
 }
 
 // Stat counter with animated count-up
@@ -58,17 +57,14 @@ function Feature({ icon, title, desc, accent, delay }) {
     );
 }
 
-const PARTICLES = Array.from({ length: 30 }, (_, i) => ({
-    text: CODE_SNIPPETS[Math.floor(Math.random() * CODE_SNIPPETS.length)],
+const PARTICLES = Array.from({ length: 22 }, (_, i) => ({
     left: `${Math.random() * 100}%`,
     top: `${Math.random() * 100}%`,
-    fontSize: `${10 + Math.random() * 14}px`,
-    color: Math.random() > 0.7 ? 'var(--syn-keyword)' : 'var(--syn-var)',
-    opacity: 0.1 + Math.random() * 0.2,
+    width: `${2 + Math.random() * 3}px`,
+    height: `${2 + Math.random() * 3}px`,
+    opacity: 0.12 + Math.random() * 0.22,
     animationDuration: `${6 + Math.random() * 10}s`,
     animationDelay: `${Math.random() * 8}s`,
-    fontFamily: 'var(--fm)',
-    userSelect: 'none'
 }));
 
 export default function Landing({ onNavigate }) {
@@ -87,7 +83,7 @@ export default function Landing({ onNavigate }) {
         <div className="view active lp-root" id="v-landing" ref={containerRef}>
             {/* Animated background particles */}
             <div className="lp-bg-particles" aria-hidden="true">
-                {PARTICLES.map((p, i) => <Particle key={i} style={p} text={p.text} />)}
+                {PARTICLES.map((p, i) => <Particle key={i} style={p} />)}
             </div>
 
             {/* Glowing blobs */}
@@ -111,30 +107,15 @@ export default function Landing({ onNavigate }) {
                     Learning Management System
                 </div>
 
-                <div className="ide-window" style={{ maxWidth: '700px', margin: '0 auto 40px', textAlign: 'left' }}>
-                    <div className="ide-header">
-                        <div className="ide-dot red"></div>
-                        <div className="ide-dot yellow"></div>
-                        <div className="ide-dot green"></div>
-                        <div className="ide-title">EduTrack.js</div>
-                    </div>
-                    <div className="ide-content">
-                        <div><span className="syn-keyword">import</span> {'{'} <span className="syn-class">Teacher</span>, <span className="syn-class">Admin</span> {'}'} <span className="syn-keyword">from</span> <span className="syn-str">'@edutrack/core'</span>;</div>
-                        <br />
-                        <div><span className="syn-comment">// Initialize the ultimate learning management system</span></div>
-                        <div className="typing-wrapper">
-                            <div className="typing-effect">
-                                <span className="syn-keyword">const</span> <span className="syn-var">platform</span> = <span className="syn-keyword">new</span> <span className="syn-class">EduTrack</span>();
-                            </div>
-                        </div>
-                        <br />
-                        <div style={{ animation: 'lp-slide-up 0.5s 3.5s both' }}>
-                            <span className="syn-var">platform</span>.<span className="syn-func">manageClass</span>(<span className="syn-str">'Effortlessly'</span>);
-                        </div>
-                    </div>
-                </div>
+                <h1 className="lp-hero-title">
+                    <span className="lp-title-line">Manage</span>
+                    <span className="lp-title-line lp-title-accent">
+                        <span className="lp-title-outline">Every</span> Class
+                    </span>
+                    <span className="lp-title-line">Effortlessly.</span>
+                </h1>
 
-                <p className="lp-hero-sub" style={{ animationDelay: '4s' }}>
+                <p className="lp-hero-sub">
                     A unified platform for teachers to manage groups and admins to oversee all educational operations — all in one place.
                 </p>
 
