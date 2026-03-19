@@ -400,7 +400,7 @@ export default function TeacherApp({ token, user, onLogout }) {
                                             ) : (
                                                 <div style={{ display: 'flex', gap: '4px' }}>
                                                     <button onClick={() => handleAvailChange('odd', slot, 'Free')} style={{ cursor: 'pointer', background: status === 'Free' ? '#4caf50' : 'transparent', color: status === 'Free' ? '#fff' : 'var(--gray)', border: '1px solid ' + (status === 'Free' ? '#4caf50' : 'var(--border)'), padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, transition: 'all .2s' }}>Free</button>
-                                                    <button onClick={() => handleAvailChange('odd', slot, 'Busy')} style={{ cursor: 'pointer', background: status === 'Busy' ? '#f44336' : 'transparent', color: status === 'Busy' ? '#fff' : 'var(--gray)', border: '1px solid ' + (status === 'Busy' ? '#f44336' : 'var(--border)'), padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, transition: 'all .2s' }}>Busy</button>
+                                                    <button onClick={() => handleAvailChange('odd', slot, 'Busy')} style={{ cursor: 'pointer', background: status === 'Busy' ? '#ff9800' : 'transparent', color: status === 'Busy' ? '#fff' : 'var(--gray)', border: '1px solid ' + (status === 'Busy' ? '#ff9800' : 'var(--border)'), padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, transition: 'all .2s' }}>Busy</button>
                                                 </div>
                                             )}
                                         </div>
@@ -421,7 +421,7 @@ export default function TeacherApp({ token, user, onLogout }) {
                                             ) : (
                                                 <div style={{ display: 'flex', gap: '4px' }}>
                                                     <button onClick={() => handleAvailChange('even', slot, 'Free')} style={{ cursor: 'pointer', background: status === 'Free' ? '#4caf50' : 'transparent', color: status === 'Free' ? '#fff' : 'var(--gray)', border: '1px solid ' + (status === 'Free' ? '#4caf50' : 'var(--border)'), padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, transition: 'all .2s' }}>Free</button>
-                                                    <button onClick={() => handleAvailChange('even', slot, 'Busy')} style={{ cursor: 'pointer', background: status === 'Busy' ? '#f44336' : 'transparent', color: status === 'Busy' ? '#fff' : 'var(--gray)', border: '1px solid ' + (status === 'Busy' ? '#f44336' : 'var(--border)'), padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, transition: 'all .2s' }}>Busy</button>
+                                                    <button onClick={() => handleAvailChange('even', slot, 'Busy')} style={{ cursor: 'pointer', background: status === 'Busy' ? '#ff9800' : 'transparent', color: status === 'Busy' ? '#fff' : 'var(--gray)', border: '1px solid ' + (status === 'Busy' ? '#ff9800' : 'var(--border)'), padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, transition: 'all .2s' }}>Busy</button>
                                                 </div>
                                             )}
                                         </div>

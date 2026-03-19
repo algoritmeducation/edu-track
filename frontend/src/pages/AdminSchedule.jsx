@@ -81,7 +81,7 @@ export default function AdminSchedule({ token }) {
             let bg = 'rgba(255,255,255,0.05)', color = 'var(--gray)', borderColor = 'var(--border)';
             if (status === 'Lesson') { bg = 'rgba(244,67,54,0.1)'; color = 'var(--red)'; borderColor = 'rgba(244,67,54,0.2)'; }
             else if (status === 'Free') { bg = 'rgba(76,175,80,0.1)'; color = 'var(--green)'; borderColor = 'rgba(76,175,80,0.2)'; }
-            else if (status === 'Busy') { bg = 'rgba(255,255,255,0.05)'; color = 'var(--gray)'; borderColor = 'var(--border)'; }
+            else if (status === 'Busy') { bg = 'rgba(255,152,0,0.1)'; color = '#ff9800'; borderColor = 'rgba(255,152,0,0.2)'; }
 
             return (
                 <div key={slot} style={{ background: bg, border: `1px solid ${borderColor}`, padding: '6px 10px', borderRadius: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', minWidth: '94px' }}>
