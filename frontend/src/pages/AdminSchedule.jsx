@@ -130,9 +130,9 @@ export default function AdminSchedule({ token }) {
                         cursor: 'pointer'
                     }}
                 >
-                    <option value="All">All Specializations</option>
+                    <option value="All" style={{ background: 'var(--darker)', color: 'var(--white)' }}>All Specializations</option>
                     {allSubjects.map(subj => (
-                        <option key={subj} value={subj}>{subj}</option>
+                        <option key={subj} value={subj} style={{ background: 'var(--darker)', color: 'var(--white)' }}>{subj}</option>
                     ))}
                 </select>
             </div>
