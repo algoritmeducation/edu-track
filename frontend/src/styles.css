@@ -126,58 +126,59 @@ body {
     }
 }
 
-/* Glowing blobs */
+/* Glowing Aurora Blobs */
 .lp-blob {
     position: fixed;
     border-radius: 50%;
-    filter: blur(80px);
+    filter: blur(120px);
     pointer-events: none;
     z-index: 0;
-    animation: lp-blob-drift ease-in-out infinite
+    animation: lp-aurora-drift 20s ease-in-out infinite alternate;
+    opacity: 0.6;
 }
 
 .lp-blob-1 {
-    width: 700px;
-    height: 700px;
-    top: -200px;
-    left: -200px;
-    background: radial-gradient(circle, rgba(245, 197, 24, .14) 0%, transparent 70%);
-    animation-duration: 18s
+    width: 60vw;
+    height: 60vh;
+    top: -10vh;
+    left: -10vw;
+    background: radial-gradient(circle, rgba(245, 197, 24, 0.2) 0%, transparent 60%);
+    animation-delay: 0s;
 }
 
 .lp-blob-2 {
-    width: 500px;
-    height: 500px;
+    width: 50vw;
+    height: 50vh;
     top: 40vh;
-    right: -150px;
-    background: radial-gradient(circle, rgba(245, 197, 24, .08) 0%, transparent 70%);
-    animation-duration: 22s;
-    animation-delay: -6s
+    right: -10vw;
+    background: radial-gradient(circle, rgba(96, 165, 250, 0.25) 0%, transparent 60%);
+    animation-delay: -5s;
 }
 
 .lp-blob-3 {
-    width: 400px;
-    height: 400px;
-    bottom: 10vh;
+    width: 70vw;
+    height: 70vh;
+    bottom: -20vh;
     left: 20%;
-    background: radial-gradient(circle, rgba(96, 165, 250, .07) 0%, transparent 70%);
-    animation-duration: 26s;
-    animation-delay: -12s
+    background: radial-gradient(circle, rgba(167, 139, 250, 0.2) 0%, transparent 60%);
+    animation-delay: -10s;
 }
 
-@keyframes lp-blob-drift {
+@keyframes lp-aurora-drift {
+    0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+    }
 
-    0%,
+    33% {
+        transform: translate(5vw, -5vh) scale(1.1) rotate(5deg);
+    }
+
+    66% {
+        transform: translate(-3vw, 4vh) scale(0.9) rotate(-3deg);
+    }
+
     100% {
-        transform: translate(0, 0) scale(1)
-    }
-
-    40% {
-        transform: translate(40px, -30px) scale(1.07)
-    }
-
-    70% {
-        transform: translate(-20px, 20px) scale(.95)
+        transform: translate(0, 0) scale(1.05) rotate(2deg);
     }
 }
 
@@ -352,21 +353,22 @@ body {
 
 .lp-cta-card {
     position: relative;
-    background: var(--dark);
-    border: 1px solid var(--border2);
-    border-radius: 20px;
+    background: rgba(30, 30, 30, 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
     padding: 0;
     width: 300px;
     cursor: pointer;
     overflow: hidden;
-    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease;
+    transition: transform .4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow .4s ease, border-color .4s ease, background .4s ease;
     text-align: left
 }
 
 .lp-cta-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 28px 80px rgba(0, 0, 0, .7);
-    border-color: var(--yborder)
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, .6), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    background: rgba(40, 40, 40, 0.6);
 }
 
 .lp-cta-card:hover .lp-cta-glow {
@@ -527,18 +529,21 @@ body {
 }
 
 .lp-stat {
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px 20px;
+    background: rgba(30, 30, 30, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 32px 20px;
     text-align: center;
     animation: lp-slide-up .7s ease both;
-    transition: border-color .2s, transform .2s
+    transition: border-color .3s, transform .3s, background .3s, box-shadow .3s;
 }
 
 .lp-stat:hover {
-    border-color: var(--yborder);
-    transform: translateY(-3px)
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(40, 40, 40, 0.5);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .lp-stat-icon {
@@ -617,16 +622,20 @@ body {
     display: flex;
     align-items: flex-start;
     gap: 16px;
-    background: var(--dark);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
+    background: rgba(30, 30, 30, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 28px;
     animation: lp-slide-up .6s ease both;
-    transition: border-color .2s, transform .2s
+    transition: border-color .3s, transform .3s, background .3s, box-shadow .3s;
 }
 
 .lp-feature:hover {
-    transform: translateY(-3px)
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(40, 40, 40, 0.5);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
 }
 
 .lp-feature-icon {

@@ -67,9 +67,17 @@ const PARTICLES = Array.from({ length: 22 }, (_, i) => ({
     animationDelay: `${Math.random() * 8}s`,
 }));
 
+const DYNAMIC_WORDS = ['Every', 'All', 'Your', 'Any'];
+
 export default function Landing({ onNavigate }) {
     const [scrolled, setScrolled] = useState(false);
+    const [wordIdx, setWordIdx] = useState(0);
     const containerRef = useRef(null);
+
+    useEffect(() => {
+        const timer = setInterval(() => setWordIdx(i => (i + 1) % DYNAMIC_WORDS.length), 2500);
+        return () => clearInterval(timer);
+    }, []);
 
     useEffect(() => {
         const el = containerRef.current;
@@ -110,7 +118,7 @@ export default function Landing({ onNavigate }) {
                 <h1 className="lp-hero-title">
                     <span className="lp-title-line">Manage</span>
                     <span className="lp-title-line lp-title-accent">
-                        <span className="lp-title-outline">Every</span> Class
+                        <span className="lp-title-outline" key={wordIdx} style={{ animation: 'lp-slide-up 0.5s ease both' }}>{DYNAMIC_WORDS[wordIdx]}</span> Class
                     </span>
                     <span className="lp-title-line">Effortlessly.</span>
                 </h1>
@@ -185,34 +193,34 @@ export default function Landing({ onNavigate }) {
                 <h2 className="lp-section-title">Everything you need, <span className="y">nothing you don't</span></h2>
                 <div className="lp-features-grid">
                     <Feature delay="0s" accent="#f5c518"
-                        icon={<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" /></svg>}
-                        title="Attendance Tracking"
-                        desc="Log and review student attendance records across all sessions with precision."
+                        icon={<svg viewBox="0 0 24 24"><path d="M12 2l7 4v5c0 5-3.5 9.74-7 11-3.5-1.26-7-6-7-11V6l7-4z" /><polyline points="9 12 11 14 15 10" /></svg>}
+                        title="Admin Full Oversight"
+                        desc="Seamlessly manage all teachers, overview platform stats, and securely delete accounts or groups."
                     />
                     <Feature delay="0.05s" accent="#4ade80"
                         icon={<svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>}
                         title="Progress Analytics"
-                        desc="Visualize student progress with level bars and segmented completion stats."
+                        desc="Visualize student progress with detailed level bars and segmented completion stats."
                     />
                     <Feature delay="0.1s" accent="#60a5fa"
                         icon={<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>}
-                        title="Schedule Management"
-                        desc="Set class times with 24-hour precision and view upcoming sessions at a glance."
+                        title="24-Hour Schedule"
+                        desc="Set class times with precise 24-hour formatting and view upcoming sessions instantly."
                     />
                     <Feature delay="0.15s" accent="#f472b6"
-                        icon={<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>}
-                        title="Group Management"
-                        desc="Create, edit, and monitor student groups with real-time status tracking."
+                        icon={<svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>}
+                        title="Role-Based Dashboards"
+                        desc="Distinct, secure portals for administrators and teachers with dedicated permissions."
                     />
                     <Feature delay="0.2s" accent="#a78bfa"
-                        icon={<svg viewBox="0 0 24 24"><path d="M12 2l7 4v5c0 5-3.5 9.74-7 11-3.5-1.26-7-6-7-11V6l7-4z" /></svg>}
-                        title="Role-Based Access"
-                        desc="Separate teacher and admin portals with dedicated permissions and dashboards."
+                        icon={<svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>}
+                        title="Course-Aware Filters"
+                        desc="Intelligent class filtering ensuring teachers only see subjects relevant to their expertise."
                     />
                     <Feature delay="0.25s" accent="#fb923c"
                         icon={<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14" /></svg>}
                         title="Multi-Specialization"
-                        desc="Assign teachers up to two subject specializations for flexible course management."
+                        desc="Assign teachers up to two distinct subject specializations for flexible course management."
                     />
                 </div>
             </section>
