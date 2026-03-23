@@ -122,17 +122,17 @@ export default function AdminSchedule({ token }) {
                     style={{
                         padding: '8px 12px',
                         borderRadius: '8px',
-                        background: 'var(--darker)',
+                        background: '#121212',
                         border: '1px solid var(--border)',
-                        color: 'var(--white)',
+                        color: '#ffffff',
                         fontSize: '14px',
                         outline: 'none',
                         cursor: 'pointer'
                     }}
                 >
-                    <option value="All" style={{ background: 'var(--darker)', color: 'var(--white)' }}>All Specializations</option>
+                    <option value="All" style={{ background: '#121212', color: '#ffffff' }}>All Specializations</option>
                     {allSubjects.map(subj => (
-                        <option key={subj} value={subj} style={{ background: 'var(--darker)', color: 'var(--white)' }}>{subj}</option>
+                        <option key={subj} value={subj} style={{ background: '#121212', color: '#ffffff' }}>{subj}</option>
                     ))}
                 </select>
             </div>
