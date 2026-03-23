@@ -6,6 +6,7 @@ import Skeleton from '../components/Skeleton';
 export default function AdminSchedule({ token }) {
     const [teachers, setTeachers] = useState(null);
     const [groups, setGroups] = useState(null);
+    const [filterSubject, setFilterSubject] = useState('All');
     const showToast = useToast();
 
     useEffect(() => { loadData(); }, []);
@@ -109,9 +110,34 @@ export default function AdminSchedule({ token }) {
         return <div className="panel-body"><Skeleton /></div>;
     }
 
+    const displayedSubjects = filterSubject === 'All' ? allSubjects : allSubjects.filter(s => s === filterSubject);
+
     return (
         <div className="panel-body">
-            {allSubjects.map((subject) => {
+            <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ color: 'var(--gray)', fontSize: '14px', fontWeight: 500 }}>Filter by specialization:</span>
+                <select
+                    value={filterSubject}
+                    onChange={(e) => setFilterSubject(e.target.value)}
+                    style={{
+                        padding: '8px 12px',
+                        borderRadius: '8px',
+                        background: 'var(--darker)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--white)',
+                        fontSize: '14px',
+                        outline: 'none',
+                        cursor: 'pointer'
+                    }}
+                >
+                    <option value="All">All Specializations</option>
+                    {allSubjects.map(subj => (
+                        <option key={subj} value={subj}>{subj}</option>
+                    ))}
+                </select>
+            </div>
+
+            {displayedSubjects.map((subject) => {
                 const subjTeachers = groupedTeachers[subject] || [];
                 return (
                     <div key={subject} style={{ marginBottom: '40px' }}>
@@ -174,6 +200,9 @@ export default function AdminSchedule({ token }) {
             })}
             {allSubjects.length === 0 && (
                 <div style={{ textAlign: 'center', padding: '32px', color: 'var(--gray)' }}>No teachers active</div>
+            )}
+            {allSubjects.length > 0 && displayedSubjects.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '32px', color: 'var(--gray)' }}>No teachers found for this specialization</div>
             )}
         </div>
     );
