@@ -4,7 +4,7 @@ import AdminOverview from './AdminOverview';
 import AdminGroups from './AdminGroups';
 import AdminTeachers from './AdminTeachers';
 import AdminSchedule from './AdminSchedule';
-import NotificationBanner from '../components/NotificationBanner';
+import NotificationBell from '../components/NotificationBanner';
 
 const TABS = [
     { key: 'overview', label: 'Overview' },
@@ -22,8 +22,13 @@ export default function AdminApp({ token, onLogout }) {
                 onLogout={onLogout}
                 user={{ avatar: 'A', name: 'Administrator', role: 'Admin Panel' }}
                 tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab}
+                rightSlot={
+                    <NotificationBell
+                        token={token}
+                        onGoToGroups={() => setActiveTab('groups')}
+                    />
+                }
             />
-            <NotificationBanner token={token} onGoToGroups={() => setActiveTab('groups')} />
             <div style={{ flex: 1 }}>
                 {activeTab === 'overview' && (
                     <div className="panel active" id="apanel-overview">

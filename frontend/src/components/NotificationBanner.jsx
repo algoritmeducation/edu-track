@@ -1,53 +1,55 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../api';
 import { totalDone, totalLessons, pct } from '../constants';
 
 const DISMISS_KEY = 'nearComplete_dismissed';
-
 function loadDismissed() {
-    try { return JSON.parse(localStorage.getItem(DISMISS_KEY) || '{}'); }
-    catch { return {}; }
+    try { return JSON.parse(localStorage.getItem(DISMISS_KEY) || '{}'); } catch { return {}; }
 }
 function saveDismissed(map) {
     try { localStorage.setItem(DISMISS_KEY, JSON.stringify(map)); } catch { }
 }
 
-export default function NotificationBanner({ token, onGoToGroups }) {
-    const [nearGroups, setNearGroups] = useState([]);
+export default function NotificationBell({ token, onGoToGroups }) {
+    const [allNear, setAllNear] = useState([]);
     const [dismissed, setDismissed] = useState(loadDismissed);
-    const [collapsed, setCollapsed] = useState(false);
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
 
     const load = useCallback(async () => {
         if (!token) return;
         try {
             const groups = await api('GET', '/api/groups', null, token);
-            const near = groups.filter(g => {
-                const p = pct(totalDone(g.level, g.doneInLevel), totalLessons(g.lang));
-                return p >= 95;
-            });
-            setNearGroups(near);
+            setAllNear(groups.filter(g =>
+                pct(totalDone(g.level, g.doneInLevel), totalLessons(g.lang)) >= 95
+            ));
         } catch { }
     }, [token]);
 
     useEffect(() => { load(); }, [load]);
 
-    // Prune stale dismissals (group ids that no longer exist in near-complete set)
-    const visible = nearGroups.filter(g => {
+    // Close dropdown on outside click
+    useEffect(() => {
+        function handler(e) {
+            if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+        }
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, []);
+
+    const visible = allNear.filter(g => {
         const id = g.id || g._id;
         const p = pct(totalDone(g.level, g.doneInLevel), totalLessons(g.lang));
-        const key = `${id}_${p}`;
-        return !dismissed[key];
+        return !dismissed[`${id}_${p}`];
     });
 
-    if (!visible.length) return null;
+    const count = visible.length;
 
     function dismiss(group) {
         const id = group.id || group._id;
         const p = pct(totalDone(group.level, group.doneInLevel), totalLessons(group.lang));
-        const key = `${id}_${p}`;
-        const next = { ...dismissed, [key]: true };
-        setDismissed(next);
-        saveDismissed(next);
+        const next = { ...dismissed, [`${id}_${p}`]: true };
+        setDismissed(next); saveDismissed(next);
     }
 
     function dismissAll() {
@@ -57,69 +59,78 @@ export default function NotificationBanner({ token, onGoToGroups }) {
             const p = pct(totalDone(g.level, g.doneInLevel), totalLessons(g.lang));
             next[`${id}_${p}`] = true;
         });
-        setDismissed(next);
-        saveDismissed(next);
+        setDismissed(next); saveDismissed(next);
     }
 
     return (
-        <div className="notif-banner-wrap">
-            <div className="notif-banner-header">
-                <div className="notif-banner-title">
-                    <span className="notif-pulse-dot" />
-                    <span>
-                        {visible.length} group{visible.length > 1 ? 's' : ''} nearly finished
-                        <span className="notif-banner-sub"> — please review and delete completed classes</span>
-                    </span>
-                </div>
-                <div className="notif-banner-actions">
-                    <button className="notif-btn-link" onClick={dismissAll}>Dismiss all</button>
-                    <button
-                        className="notif-btn-collapse"
-                        onClick={() => setCollapsed(c => !c)}
-                        title={collapsed ? 'Expand' : 'Collapse'}
-                    >
-                        {collapsed ? '▾' : '▴'}
-                    </button>
-                </div>
-            </div>
+        <div className="notif-bell-wrap" ref={ref}>
+            <button
+                className={`notif-bell-btn${open ? ' open' : ''}`}
+                onClick={() => setOpen(o => !o)}
+                title="Group notifications"
+            >
+                {/* Bell SVG */}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                </svg>
+                {count > 0 && (
+                    <span className="notif-badge">{count > 9 ? '9+' : count}</span>
+                )}
+            </button>
 
-            {!collapsed && (
-                <div className="notif-cards">
-                    {visible.map(g => {
-                        const id = g.id || g._id;
-                        const p = pct(totalDone(g.level, g.doneInLevel), totalLessons(g.lang));
-                        const isComplete = p >= 100;
-                        return (
-                            <div key={id} className={`notif-card${isComplete ? ' notif-card--done' : ''}`}>
-                                <div className="notif-card-left">
-                                    <div className={`notif-pct-badge${isComplete ? ' done' : ''}`}>{p}%</div>
-                                    <div>
-                                        <div className="notif-card-name">{g.group}</div>
-                                        <div className="notif-card-meta">{g.lang} &nbsp;·&nbsp; {g.students} students</div>
+            {open && (
+                <div className="notif-dropdown">
+                    <div className="notif-drop-header">
+                        <span className="notif-drop-title">
+                            {count > 0
+                                ? `${count} group${count > 1 ? 's' : ''} nearly finished`
+                                : 'No pending notifications'}
+                        </span>
+                        {count > 0 && (
+                            <button className="notif-btn-link" onClick={dismissAll}>
+                                Clear all
+                            </button>
+                        )}
+                    </div>
+
+                    {count === 0 ? (
+                        <div className="notif-empty">
+                            <span style={{ fontSize: 28 }}>✓</span>
+                            <span>All groups are on track</span>
+                        </div>
+                    ) : (
+                        <div className="notif-drop-list">
+                            {visible.map(g => {
+                                const id = g.id || g._id;
+                                const p = pct(totalDone(g.level, g.doneInLevel), totalLessons(g.lang));
+                                const done = p >= 100;
+                                return (
+                                    <div key={id} className={`notif-drop-item${done ? ' done' : ''}`}>
+                                        <div className={`notif-pct-badge${done ? ' done' : ''}`}>{p}%</div>
+                                        <div className="notif-drop-info">
+                                            <div className="notif-card-name">{g.group}</div>
+                                            <div className="notif-card-meta">
+                                                {g.lang} &nbsp;·&nbsp; {g.students} students
+                                                {done
+                                                    ? <span className="notif-label-done" style={{ marginLeft: 6 }}>✓ Complete — delete class</span>
+                                                    : <span className="notif-label-near" style={{ marginLeft: 6 }}>Almost done</span>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                                            <button
+                                                className="notif-goto-btn"
+                                                onClick={() => { onGoToGroups && onGoToGroups(); setOpen(false); }}
+                                            >Manage</button>
+                                            <button className="notif-dismiss-btn" onClick={() => dismiss(g)}>✕</button>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="notif-card-right">
-                                    {isComplete ? (
-                                        <span className="notif-label-done">✓ Complete</span>
-                                    ) : (
-                                        <span className="notif-label-near">Nearly done</span>
-                                    )}
-                                    <button
-                                        className="notif-goto-btn"
-                                        onClick={() => onGoToGroups && onGoToGroups()}
-                                        title="Go to All Groups to manage this class"
-                                    >
-                                        Manage →
-                                    </button>
-                                    <button
-                                        className="notif-dismiss-btn"
-                                        onClick={() => dismiss(g)}
-                                        title="Dismiss this notification"
-                                    >✕</button>
-                                </div>
-                            </div>
-                        );
-                    })}
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
             )}
         </div>

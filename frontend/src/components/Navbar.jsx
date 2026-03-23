@@ -1,4 +1,4 @@
-export default function Navbar({ user, onLogout, tabs, activeTab, onTabChange }) {
+export default function Navbar({ user, onLogout, tabs, activeTab, onTabChange, rightSlot }) {
     return (
         <nav className="app-nav">
             <div className="nav-logo">EDUTRACK</div>
@@ -17,6 +17,7 @@ export default function Navbar({ user, onLogout, tabs, activeTab, onTabChange })
                 </div>
             )}
             <div className="nav-user">
+                {rightSlot && rightSlot}
                 <div className="nav-avatar">{user.avatar}</div>
                 <div>
                     <div className="nav-uname">{user.name}</div>
