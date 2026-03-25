@@ -2809,7 +2809,11 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     font-family: var(--fm);
     font-size: 11px;
     color: var(--gray);
-    margin-top: 2px;
+    margin-top: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
 }
 
 .notif-card-right {
@@ -2820,6 +2824,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 .notif-label-near {
+    display: inline-block;
+    white-space: nowrap;
     font-family: var(--fm);
     font-size: 10px;
     letter-spacing: 1.5px;
@@ -2832,6 +2838,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 .notif-label-done {
+    display: inline-block;
+    white-space: nowrap;
     font-family: var(--fm);
     font-size: 10px;
     letter-spacing: 1.5px;
@@ -2948,6 +2956,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     top: calc(100% + 10px);
     right: 0;
     width: 360px;
+    max-width: calc(100vw - 32px);
     background: var(--dark2);
     border: 1px solid var(--border2);
     border-radius: var(--r);

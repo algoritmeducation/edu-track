@@ -114,8 +114,8 @@ export default function NotificationBell({ token, onGoToGroups }) {
                                             <div className="notif-card-meta">
                                                 {g.lang} &nbsp;·&nbsp; {g.students} students
                                                 {done
-                                                    ? <span className="notif-label-done" style={{ marginLeft: 6 }}>✓ Complete — delete class</span>
-                                                    : <span className="notif-label-near" style={{ marginLeft: 6 }}>Almost done</span>
+                                                    ? <span className="notif-label-done">✓ Complete — delete class</span>
+                                                    : <span className="notif-label-near">Almost done</span>
                                                 }
                                             </div>
                                         </div>
