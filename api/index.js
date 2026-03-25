@@ -181,6 +181,9 @@ app.post('/api/groups', auth, async (req, res) => {
     if (doneInLevel < 0 || doneInLevel > LPL) return res.status(400).json({ error: 'Invalid doneInLevel' });
     if (new Date(exam) <= new Date(start)) return res.status(400).json({ error: 'exam must be after start' });
     if (req.user.role === 'admin' && !(await Teacher.findById(tid))) return res.status(400).json({ error: 'Invalid tid' });
+
+    if ((await Group.countDocuments({ tid })) >= 10) return res.status(400).json({ error: 'A teacher cannot have more than 10 groups' });
+
     const g = await Group.create({ tid, group, lang, startTime, endTime, start, exam, students: +students, level, doneInLevel, days: days || 'Every Day' });
     res.status(201).json(g.toJSON());
   } catch (err) { res.status(500).json({ error: err.message }); }
