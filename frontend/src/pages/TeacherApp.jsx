@@ -234,6 +234,10 @@ export default function TeacherApp({ token, user, onLogout }) {
             showToast('Number of students must be a valid number', true);
             return;
         }
+        if (parseInt(val) > 25) {
+            showToast('A group cannot have more than 25 students', true);
+            return;
+        }
         setFStudents(val);
     }
 

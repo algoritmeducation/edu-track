@@ -176,6 +176,7 @@ app.post('/api/groups', auth, async (req, res) => {
     if (!group || !lang || !startTime || !endTime || !start || !exam || !students || !level || !tid) return res.status(400).json({ error: 'All fields required' });
     if (!validLangs.includes(lang)) return res.status(400).json({ error: 'Invalid lang' });
     level = +level; doneInLevel = +(doneInLevel ?? 0);
+    if (+students > 25) return res.status(400).json({ error: 'A group cannot have more than 25 students' });
     const cfg = PC[lang];
     if (level < 1 || level > cfg.levels) return res.status(400).json({ error: 'Invalid level' });
     if (doneInLevel < 0 || doneInLevel > LPL) return res.status(400).json({ error: 'Invalid doneInLevel' });
@@ -195,6 +196,7 @@ app.put('/api/groups/:id', auth, async (req, res) => {
     if (!g) return res.status(404).json({ error: 'Group not found' });
     if (req.user.role === 'teacher' && g.tid !== req.user.tid) return res.status(403).json({ error: 'Forbidden' });
     if (req.body.lang && !validLangs.includes(req.body.lang)) return res.status(400).json({ error: 'Invalid lang' });
+    if (req.body.students != null && +req.body.students > 25) return res.status(400).json({ error: 'A group cannot have more than 25 students' });
     for (const f of ['group', 'lang', 'startTime', 'endTime', 'start', 'exam', 'students', 'level', 'doneInLevel', 'days']) if (req.body[f] != null) g[f] = req.body[f];
     await g.save(); res.json(g.toJSON());
   } catch (err) { res.status(500).json({ error: err.message }); }
