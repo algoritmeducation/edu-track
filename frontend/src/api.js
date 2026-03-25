@@ -6,7 +6,11 @@ export async function api(method, path, body, token) {
         headers: {
             'Content-Type': 'application/json',
             ...(token ? { Authorization: 'Bearer ' + token } : {}),
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache',
+            'Expires': '0',
         },
+        cache: 'no-store',
     };
     if (body) opts.body = JSON.stringify(body);
     const res = await fetch(API_BASE + path, opts);

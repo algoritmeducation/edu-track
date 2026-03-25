@@ -17,6 +17,16 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Prevent aggressive caching on dynamic API routes by browsers/proxies (fixes "stale stats" issue)
+app.use((req, res, next) => {
+  if (req.method === 'GET') {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  }
+  next();
+});
+
 let isSeeded = false;
 app.use(async (req, _res, next) => {
   // Admin auth doesn't need MongoDB - skip DB connection for it
