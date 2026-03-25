@@ -12,6 +12,7 @@ export default function AdminTeachers({ token }) {
     const [teachers, setTeachers] = useState(null);
     const [allGroups, setAllGroups] = useState(null);
     const [sortBy, setSortBy] = useState('default');
+    const [searchQuery, setSearchQuery] = useState('');
     const showToast = useToast();
 
     // Teacher modal
@@ -140,28 +141,38 @@ export default function AdminTeachers({ token }) {
 
     const loading = teachers === null || allGroups === null;
 
-    const sortedTeachers = [...(teachers || [])].sort((a, b) => {
-        if (sortBy === 'default') return 0;
+    const sortedTeachers = [...(teachers || [])]
+        .filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()) || t.username.toLowerCase().includes(searchQuery.toLowerCase()))
+        .sort((a, b) => {
+            if (sortBy === 'default') return 0;
 
-        const mgA = (allGroups || []).filter(g => g.tid === a.id);
-        const tsA = mgA.reduce((acc, g) => acc + g.students, 0);
+            const mgA = (allGroups || []).filter(g => g.tid === a.id);
+            const tsA = mgA.reduce((acc, g) => acc + g.students, 0);
 
-        const mgB = (allGroups || []).filter(g => g.tid === b.id);
-        const tsB = mgB.reduce((acc, g) => acc + g.students, 0);
+            const mgB = (allGroups || []).filter(g => g.tid === b.id);
+            const tsB = mgB.reduce((acc, g) => acc + g.students, 0);
 
-        if (sortBy === 'groups-asc') return mgA.length - mgB.length;
-        if (sortBy === 'groups-desc') return mgB.length - mgA.length;
-        if (sortBy === 'students-asc') return tsA - tsB;
-        if (sortBy === 'students-desc') return tsB - tsA;
+            if (sortBy === 'groups-asc') return mgA.length - mgB.length;
+            if (sortBy === 'groups-desc') return mgB.length - mgA.length;
+            if (sortBy === 'students-asc') return tsA - tsB;
+            if (sortBy === 'students-desc') return tsB - tsA;
 
-        return 0;
-    });
+            return 0;
+        });
 
     return (
         <div className="panel-body">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
                 <span className="slabel" style={{ margin: 0 }}>All Teachers</span>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <input
+                        type="text"
+                        placeholder="Search teachers..."
+                        className="f-input"
+                        style={{ padding: '8px 16px', width: '200px', margin: 0, height: '36px', fontSize: '13px' }}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                     <select className="f-select" style={{ width: 'auto', padding: '8px 30px 8px 16px', fontSize: '13px' }} value={sortBy} onChange={e => setSortBy(e.target.value)}>
                         <option value="default">Sort: Default</option>
                         <option value="groups-asc">Groups: Min to Max</option>

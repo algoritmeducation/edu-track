@@ -20,6 +20,11 @@ export default function AdminGroups({ token }) {
     const [pendingDeleteId, setPendingDeleteId] = useState(null);
     const [deleting, setDeleting] = useState(false);
 
+    // Bulk delete
+    const [selectedIds, setSelectedIds] = useState(new Set());
+    const [bulkDeleting, setBulkDeleting] = useState(false);
+    const [bulkConfirmOpen, setBulkConfirmOpen] = useState(false);
+
     useEffect(() => { loadData(); }, []);
 
     async function loadData() {
@@ -84,6 +89,28 @@ export default function AdminGroups({ token }) {
         }
     }
 
+    function toggleSelect(id) {
+        const next = new Set(selectedIds);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        setSelectedIds(next);
+    }
+
+    async function handleBulkDelete() {
+        setBulkDeleting(true);
+        try {
+            const result = await api('POST', '/api/groups/bulk-delete', { ids: Array.from(selectedIds) }, token);
+            setBulkConfirmOpen(false);
+            setSelectedIds(new Set());
+            loadData();
+            showToast(`${result.deletedCount || selectedIds.size} groups deleted successfully`);
+        } catch (err) {
+            showToast(err.message, true);
+        } finally {
+            setBulkDeleting(false);
+        }
+    }
+
     return (
         <div className="panel-body">
             <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', marginBottom: '8px', alignItems: 'flex-start' }}>
@@ -136,7 +163,25 @@ export default function AdminGroups({ token }) {
                 </div>
             </div>
 
-            <span className="slabel" style={{ marginTop: '16px' }}>Groups by Teacher</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', marginBottom: '8px' }}>
+                <span className="slabel" style={{ margin: 0 }}>Groups by Teacher</span>
+                <button
+                    className={`filter-btn ${selectedIds.size > 0 ? 'active' : ''}`}
+                    style={{
+                        background: selectedIds.size > 0 ? 'var(--red)' : 'transparent',
+                        color: selectedIds.size > 0 ? 'white' : 'var(--gray)',
+                        borderColor: selectedIds.size > 0 ? 'var(--red)' : 'var(--border2)',
+                        padding: '6px 12px',
+                        cursor: selectedIds.size > 0 ? 'pointer' : 'not-allowed',
+                        opacity: selectedIds.size > 0 ? 1 : 0.5
+                    }}
+                    onClick={() => selectedIds.size > 0 && setBulkConfirmOpen(true)}
+                    disabled={selectedIds.size === 0}
+                >
+                    Delete Selected ({selectedIds.size})
+                </button>
+            </div>
+
             {
                 loading ? <Skeleton /> : !filtered.length ? (
                     <div className="empty-state"><div className="empty-line">NO RESULTS</div><p>No groups match the selected filters.</p></div>
@@ -160,8 +205,37 @@ export default function AdminGroups({ token }) {
                                 </div>
                                 <div className="table-wrap">
                                     <table className="data-table">
-                                        <thead><tr><th>Group</th><th>Language</th><th>Level</th><th>Time</th><th>Schedule</th><th>Start</th><th>Exam</th><th>Students</th><th>Done</th><th>Progress</th><th style={{ textAlign: 'right' }}>Actions</th></tr></thead>
-                                        <tbody>{gs.map((g) => <GroupRow key={g.id || g._id} group={g} onDelete={handleDeleteClick} />)}</tbody>
+                                        <thead>
+                                            <tr>
+                                                <th style={{ width: '40px', textAlign: 'center' }}>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={gs.length > 0 && gs.every(g => selectedIds.has(g.id || g._id))}
+                                                        onChange={() => {
+                                                            const allSelected = gs.length > 0 && gs.every(g => selectedIds.has(g.id || g._id));
+                                                            const next = new Set(selectedIds);
+                                                            if (allSelected) {
+                                                                gs.forEach(g => next.delete(g.id || g._id));
+                                                            } else {
+                                                                gs.forEach(g => next.add(g.id || g._id));
+                                                            }
+                                                            setSelectedIds(next);
+                                                        }}
+                                                        style={{ cursor: 'pointer', width: '16px', height: '16px', opacity: 0.8 }}
+                                                    />
+                                                </th>
+                                                <th>Group</th><th>Language</th><th>Level</th><th>Time</th><th>Schedule</th><th>Start</th><th>Exam</th><th>Students</th><th>Done</th><th>Progress</th><th style={{ textAlign: 'right' }}>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>{gs.map((g) => (
+                                            <GroupRow
+                                                key={g.id || g._id}
+                                                group={g}
+                                                onDelete={handleDeleteClick}
+                                                selected={selectedIds.has(g.id || g._id)}
+                                                onSelect={toggleSelect}
+                                            />
+                                        ))}</tbody>
                                     </table>
                                 </div>
                             </div>
@@ -177,6 +251,14 @@ export default function AdminGroups({ token }) {
                 message={confirmMsg}
                 loading={deleting}
             />
-        </div >
+
+            <ConfirmModal
+                open={bulkConfirmOpen}
+                onClose={() => setBulkConfirmOpen(false)}
+                onConfirm={handleBulkDelete}
+                message={`Delete ${selectedIds.size} selected groups?<br>This action cannot be undone.`}
+                loading={bulkDeleting}
+            />
+        </div>
     );
 }

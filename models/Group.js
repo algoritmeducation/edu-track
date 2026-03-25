@@ -24,4 +24,6 @@ const schema = new mongoose.Schema({
   },
 });
 
+schema.index({ tid: 1 });
+
 module.exports = mongoose.models.Group || mongoose.model('Group', schema);

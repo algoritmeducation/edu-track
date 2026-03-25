@@ -27,16 +27,15 @@ app.use((req, res, next) => {
   next();
 });
 
-let isSeeded = false;
+// Start seed process in the background immediately
+connectDB().then(() => seed()).catch(console.error);
+
 app.use(async (req, _res, next) => {
   // Admin auth doesn't need MongoDB - skip DB connection for it
   if (req.path === '/api/auth/admin') return next();
   try {
+    // connectDB uses a cached promise, so this is ultra-fast after the first hit
     await connectDB();
-    if (!isSeeded) {
-      await seed();
-      isSeeded = true;
-    }
     next();
   }
   catch (err) { next(err); }
@@ -218,6 +217,19 @@ app.delete('/api/groups/:id', auth, async (req, res) => {
     if (!g) return res.status(404).json({ error: 'Group not found' });
     if (req.user.role === 'teacher' && g.tid !== req.user.tid) return res.status(403).json({ error: 'Forbidden' });
     await g.deleteOne(); res.json({ success: true });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/groups/bulk-delete', auth, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || !ids.length) return res.status(400).json({ error: 'ids array required' });
+
+    const filter = { _id: { $in: ids } };
+    if (req.user.role === 'teacher') filter.tid = req.user.tid;
+
+    const result = await Group.deleteMany(filter);
+    res.json({ success: true, deletedCount: result.deletedCount });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

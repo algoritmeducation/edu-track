@@ -1,13 +1,23 @@
 import { PC, totalDone, totalLessons, tagCls, fmtDate } from '../constants';
 import LevelBar from './LevelBar';
 
-export default function GroupRow({ group, onDelete }) {
+export default function GroupRow({ group, onDelete, selected, onSelect }) {
     const cfg = PC[group.lang] || { levels: 1 };
     const done = totalDone(group.level, group.doneInLevel);
     const tl = totalLessons(group.lang);
 
     return (
-        <tr>
+        <tr className={selected ? 'selected-row' : ''}>
+            {onSelect !== undefined && (
+                <td style={{ textAlign: 'center' }}>
+                    <input
+                        type="checkbox"
+                        checked={selected || false}
+                        onChange={() => onSelect(group.id || group._id)}
+                        style={{ cursor: 'pointer', width: '16px', height: '16px', opacity: 0.8 }}
+                    />
+                </td>
+            )}
             <td className="td-w">{group.group}</td>
             <td><span className={'tag tag-' + tagCls(group.lang)}>{group.lang}</span></td>
             <td>
