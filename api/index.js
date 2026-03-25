@@ -17,10 +17,18 @@ app.use(cors({
 }));
 app.use(express.json());
 
+let isSeeded = false;
 app.use(async (req, _res, next) => {
   // Admin auth doesn't need MongoDB - skip DB connection for it
   if (req.path === '/api/auth/admin') return next();
-  try { await connectDB(); await seed(); next(); }
+  try {
+    await connectDB();
+    if (!isSeeded) {
+      await seed();
+      isSeeded = true;
+    }
+    next();
+  }
   catch (err) { next(err); }
 });
 
