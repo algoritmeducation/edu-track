@@ -138,12 +138,7 @@ export default function TeacherApp({ token, user, onLogout }) {
         // Auto-fill lessons done based on elapsed calendar days
         const elapsed = computeElapsedLessons(val, updatedDays);
         if (elapsed > 0) {
-            const maxTotal = fLang ? (PC[fLang]?.levels || 1) * LPL : Infinity;
-            const clamped = Math.min(elapsed, maxTotal);
-            const autoLevel = Math.ceil(clamped / LPL) || 1;
-            const autoDone = clamped - (autoLevel - 1) * LPL;
-            setSelectedStage(autoLevel);
-            setFDone(String(autoDone));
+            setFDone(String(elapsed));
         }
     }
 
@@ -204,16 +199,11 @@ export default function TeacherApp({ token, user, onLogout }) {
         const lang = e.target.value;
         setFLang(lang);
         setSelectedStage(null);
-        // Re-compute level/doneInLevel for the newly selected subject if start is set
+        // Re-compute doneInLevel for the newly selected subject if start is set
         if (fStart && lang) {
             const elapsed = computeElapsedLessons(fStart, fDays);
             if (elapsed > 0) {
-                const maxTotal = (PC[lang]?.levels || 1) * LPL;
-                const clamped = Math.min(elapsed, maxTotal);
-                const autoLevel = Math.ceil(clamped / LPL) || 1;
-                const autoDone = clamped - (autoLevel - 1) * LPL;
-                setSelectedStage(autoLevel);
-                setFDone(String(autoDone));
+                setFDone(String(elapsed));
             }
         }
     }
@@ -253,9 +243,6 @@ export default function TeacherApp({ token, user, onLogout }) {
             showToast('Exam date must be after start date', true); return;
         }
         const doneInLevel = parseInt(fDone) || 0;
-        if (doneInLevel > LPL) {
-            showToast('Max ' + LPL + ' lessons per level', true); return;
-        }
         setSubmitting(true);
         try {
             const payload = {

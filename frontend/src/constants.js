@@ -88,12 +88,8 @@ export function computeElapsedLessons(startDateStr, daysSchedule) {
  */
 export function autoProgress(group) {
     const elapsed = computeElapsedLessons(group.start, group.days);
-    const maxTotal = totalLessons(group.lang);
-    const clamped = Math.min(elapsed, maxTotal);
-    if (clamped === 0) return { level: group.level, doneInLevel: group.doneInLevel, totalDone: totalDone(group.level, group.doneInLevel) };
-    const level = Math.ceil(clamped / LPL) || 1;
-    const doneInLevel = clamped - (level - 1) * LPL;
-    return { level, doneInLevel, totalDone: clamped };
+    if (elapsed === 0) return { level: group.level, doneInLevel: group.doneInLevel, totalDone: totalDone(group.level, group.doneInLevel) };
+    return { level: group.level, doneInLevel: elapsed, totalDone: totalDone(group.level, elapsed) };
 }
 
 /**
