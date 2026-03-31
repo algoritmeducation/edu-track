@@ -13,6 +13,7 @@ export default function AdminTeachers({ token }) {
     const [allGroups, setAllGroups] = useState(null);
     const [sortBy, setSortBy] = useState('default');
     const [searchQuery, setSearchQuery] = useState('');
+    const [filterSubject, setFilterSubject] = useState('All');
     const showToast = useToast();
 
     // Teacher modal
@@ -143,6 +144,7 @@ export default function AdminTeachers({ token }) {
 
     const sortedTeachers = [...(teachers || [])]
         .filter(t => t.name.toLowerCase().includes(searchQuery.toLowerCase()) || t.username.toLowerCase().includes(searchQuery.toLowerCase()))
+        .filter(t => filterSubject === 'All' || (Array.isArray(t.subject) ? t.subject.includes(filterSubject) : t.subject === filterSubject))
         .sort((a, b) => {
             if (sortBy === 'default') return 0;
 
@@ -173,6 +175,12 @@ export default function AdminTeachers({ token }) {
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
+                    <select className="f-select" style={{ width: 'auto', padding: '8px 30px 8px 16px', fontSize: '13px' }} value={filterSubject} onChange={e => setFilterSubject(e.target.value)}>
+                        <option value="All">All Specializations</option>
+                        {Object.keys(MODULES).map(cat => (
+                            <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                    </select>
                     <select className="f-select" style={{ width: 'auto', padding: '8px 30px 8px 16px', fontSize: '13px' }} value={sortBy} onChange={e => setSortBy(e.target.value)}>
                         <option value="default">Sort: Default</option>
                         <option value="groups-asc">Groups: Min to Max</option>
