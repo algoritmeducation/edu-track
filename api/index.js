@@ -246,7 +246,7 @@ app.get('/api/stats', auth, adminOnly, async (_req, res) => {
 });
 
 app.use((_req, res) => res.status(404).json({ error: 'Route not found' }));
-app.use((err, _req, res, _next) => { console.error(err); res.status(500).json({ error: 'DEBUG: ' + (err.message || String(err)) }); });
+app.use((err, _req, res, _next) => { console.error(err); res.status(500).json({ error: 'Internal server error' }); });
 
 module.exports = app;
 if (require.main === module) {
