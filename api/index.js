@@ -27,15 +27,17 @@ app.use((req, res, next) => {
   next();
 });
 
-// Start seed process in the background immediately
-connectDB().then(() => seed()).catch(console.error);
+let isSeeded = false;
 
 app.use(async (req, _res, next) => {
   // Admin auth doesn't need MongoDB - skip DB connection for it
   if (req.path === '/api/auth/admin') return next();
   try {
-    // connectDB uses a cached promise, so this is ultra-fast after the first hit
     await connectDB();
+    if (!isSeeded) {
+      await seed();
+      isSeeded = true;
+    }
     next();
   }
   catch (err) { next(err); }
