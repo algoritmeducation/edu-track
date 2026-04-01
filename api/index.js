@@ -188,7 +188,7 @@ app.post('/api/groups', auth, async (req, res) => {
     if (+students > 25) return res.status(400).json({ error: 'A group cannot have more than 25 students' });
     const cfg = PC[lang];
     if (level < 1 || level > cfg.levels) return res.status(400).json({ error: 'Invalid level' });
-    if (doneInLevel < 0 || doneInLevel > LPL) return res.status(400).json({ error: 'Invalid doneInLevel' });
+    if (doneInLevel < 0) return res.status(400).json({ error: 'Invalid doneInLevel' });
     if (new Date(exam) <= new Date(start)) return res.status(400).json({ error: 'exam must be after start' });
     if (req.user.role === 'admin' && !(await Teacher.findById(tid))) return res.status(400).json({ error: 'Invalid tid' });
 
