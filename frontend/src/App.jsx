@@ -5,6 +5,8 @@ import AdminLogin from './pages/AdminLogin';
 import TeacherLogin from './pages/TeacherLogin';
 import TeacherApp from './pages/TeacherApp';
 import AdminApp from './pages/AdminApp';
+import NotFound from './pages/NotFound';
+
 
 function AppContent() {
     const [token, setToken] = useState(() => localStorage.getItem('token') || null);
@@ -59,7 +61,8 @@ function AppContent() {
                     <AdminApp token={token} onLogout={handleLogout} /> :
                     <Navigate to="/admin/login" replace />
             } />
-            <Route path="*" element={<div style={{ color: '#fff', textAlign: 'center', marginTop: '20vh', fontFamily: 'sans-serif' }}>404 - Not Found</div>} />
+            <Route path="/" element={<Navigate to="/teacher/login" replace />} />
+            <Route path="*" element={<NotFound />} />
         </Routes>
     );
 }

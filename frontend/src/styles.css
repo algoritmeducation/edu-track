@@ -3046,3 +3046,275 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     font-size: 12px;
     text-align: center;
 }
+
+/* ============================================================ */
+/* MODERN LOGIN/404 DESIGN */
+/* ============================================================ */
+#v-admin-login,
+#v-teacher-login,
+#v-not-found {
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-box {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 440px;
+    background: rgba(20, 20, 20, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 28px;
+    padding: 48px 40px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: lp-slide-up 0.8s ease both;
+    display: flex;
+    flex-direction: column;
+    margin: 20px;
+}
+
+.login-icon-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: rgba(245, 197, 24, 0.12);
+    border: 1px solid rgba(245, 197, 24, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+}
+
+#v-admin-login .login-icon-wrap {
+    background: rgba(96, 165, 250, 0.15);
+    border-color: rgba(96, 165, 250, 0.3);
+}
+
+.login-icon-wrap svg {
+    width: 32px;
+    height: 32px;
+    stroke: var(--yellow);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#v-admin-login .login-icon-wrap svg {
+    stroke: #60a5fa;
+}
+
+.login-title {
+    font-family: var(--fd);
+    font-size: 36px;
+    letter-spacing: 2px;
+    color: var(--white);
+    text-align: center;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.login-title .y-admin {
+    color: #60a5fa;
+}
+
+.login-title .y {
+    color: var(--yellow);
+}
+
+.login-subtitle {
+    font-size: 14px;
+    color: var(--gray);
+    text-align: center;
+    line-height: 1.5;
+    margin-bottom: 40px;
+}
+
+.f-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.f-label {
+    font-family: var(--fm);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--gl);
+}
+
+.f-input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.f-input {
+    width: 100%;
+    height: 52px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 0 16px;
+    color: var(--white);
+    font-family: var(--fb);
+    font-size: 15px;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.f-input:focus {
+    background: rgba(0, 0, 0, 0.5);
+    border-color: var(--yellow);
+    box-shadow: 0 0 0 4px rgba(245, 197, 24, 0.1);
+}
+
+#v-admin-login .f-input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.1);
+}
+
+.f-input::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+.f-pwd-toggle {
+    position: absolute;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.f-pwd-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.f-pwd-toggle svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--gm);
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.f-error {
+    font-size: 13px;
+    color: var(--red);
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.f-error.show {
+    display: block;
+}
+
+.btn-login {
+    margin-top: 12px;
+    width: 100%;
+    height: 56px;
+    border-radius: 14px;
+    background: var(--yellow);
+    color: #000;
+    font-family: var(--fb);
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(245, 197, 24, 0.3);
+    transition: all 0.3s;
+}
+
+.btn-login:hover:not(:disabled) {
+    transform: translateY(-2px);
+    background: var(--yellow-b);
+    box-shadow: 0 8px 30px rgba(245, 197, 24, 0.4);
+}
+
+#v-admin-login .btn-login {
+    background: #60a5fa;
+    color: #000;
+    box-shadow: 0 4px 16px rgba(96, 165, 250, 0.3);
+}
+
+#v-admin-login .btn-login:hover:not(:disabled) {
+    background: #93c5fd;
+    box-shadow: 0 8px 30px rgba(96, 165, 250, 0.4);
+}
+
+.btn-login:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.nf-box {
+    text-align: center;
+    color: var(--white);
+    max-width: 480px;
+    margin: 20px;
+    position: relative;
+    z-index: 10;
+    animation: lp-slide-up 0.8s ease both;
+}
+
+.nf-404 {
+    font-family: var(--fd);
+    font-size: 140px;
+    line-height: .9;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--yellow), #fb923c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 0 30px rgba(245, 197, 24, 0.3));
+}
+
+.nf-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 16px;
+}
+
+.nf-desc {
+    font-size: 16px;
+    color: var(--gray);
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+.nf-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--white);
+    border-radius: 100px;
+    font-family: var(--fb);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.nf-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}

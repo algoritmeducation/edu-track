@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { api } from '../api';
+import AnimatedBackground from '../components/AnimatedBackground';
+
 
 export default function TeacherLogin({ onBack, onLogin }) {
     const [username, setUsername] = useState('');
@@ -24,7 +26,8 @@ export default function TeacherLogin({ onBack, onLogin }) {
     }
 
     return (
-        <div className="view active" id="v-teacher-login">
+        <div className="view active lp-root" id="v-teacher-login">
+            <AnimatedBackground />
             <div className="login-box">
                 <div className="login-icon-wrap">
                     <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" /><path d="M19 8l2 2-2 2" /><path d="M17 12h4" /></svg>
