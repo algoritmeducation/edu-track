@@ -28,7 +28,6 @@ export default function AdminLogin({ onBack, onLogin }) {
     return (
         <div className="view active" id="v-admin-login">
             <div className="login-box">
-                <button className="login-back" onClick={onBack}>← Back</button>
                 <div className="login-icon-wrap">
                     <svg viewBox="0 0 24 24"><path d="M12 2l7 4v5c0 5-3.5 9.74-7 11-3.5-1.26-7-6-7-11V6l7-4z" /><polyline points="9 12 11 14 15 10" /></svg>
                 </div>

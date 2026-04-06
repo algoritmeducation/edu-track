@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { ToastProvider } from './components/Toast';
-import Landing from './pages/Landing';
 import AdminLogin from './pages/AdminLogin';
 import TeacherLogin from './pages/TeacherLogin';
 import TeacherApp from './pages/TeacherApp';
@@ -37,27 +36,18 @@ function AppContent() {
         setUser(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        navigate('/');
-    }
-
-    function handleNavigate(route) {
-        if (route === 'admin-login') navigate('/admin/login');
-        else if (route === 'teacher-login') navigate('/teacher/login');
-        else navigate('/');
+        navigate(user?.type === 'admin' ? '/admin/login' : '/teacher/login');
     }
 
     return (
         <Routes>
-            <Route path="/" element={
-                <Landing onNavigate={handleNavigate} />
-            } />
             <Route path="/admin/login" element={
                 user?.type === 'admin' ? <Navigate to="/admin" replace /> :
-                    <AdminLogin onBack={() => navigate('/')} onLogin={handleLogin} />
+                    <AdminLogin onLogin={handleLogin} />
             } />
             <Route path="/teacher/login" element={
                 user?.type === 'teacher' ? <Navigate to="/teacher" replace /> :
-                    <TeacherLogin onBack={() => navigate('/')} onLogin={handleLogin} />
+                    <TeacherLogin onLogin={handleLogin} />
             } />
             <Route path="/teacher/*" element={
                 (token && user?.type === 'teacher') ?
@@ -69,7 +59,7 @@ function AppContent() {
                     <AdminApp token={token} onLogout={handleLogout} /> :
                     <Navigate to="/admin/login" replace />
             } />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<div style={{ color: '#fff', textAlign: 'center', marginTop: '20vh', fontFamily: 'sans-serif' }}>404 - Not Found</div>} />
         </Routes>
     );
 }
