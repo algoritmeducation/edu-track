@@ -12,6 +12,7 @@ export default function AdminGroups({ token, onLogout }) {
     const [langFilter, setLangFilter] = useState('all');
     const [moduleFilter, setModuleFilter] = useState('all');
     const [progFilter, setProgFilter] = useState('all');
+    const [showArchived, setShowArchived] = useState(false);
     const showToast = useToast();
 
     // Delete confirm
@@ -25,14 +26,14 @@ export default function AdminGroups({ token, onLogout }) {
     const [bulkDeleting, setBulkDeleting] = useState(false);
     const [bulkConfirmOpen, setBulkConfirmOpen] = useState(false);
 
-    useEffect(() => { loadData(); }, []);
+    useEffect(() => { loadData(); }, [showArchived]);
 
     async function loadData() {
         try {
             setTeachers(null); setAllGroups(null);
             const [t, g] = await Promise.all([
                 api('GET', '/api/teachers', null, token, onLogout),
-                api('GET', '/api/groups', null, token, onLogout),
+                api('GET', `/api/groups${showArchived ? '?archived=true' : ''}`, null, token, onLogout),
             ]);
             setTeachers(t);
             setAllGroups(g);
@@ -73,6 +74,18 @@ export default function AdminGroups({ token, onLogout }) {
         setPendingDeleteId(group.id || group._id);
         setConfirmMsg(`Delete group <strong>${group.group}</strong> (${group.lang})?<br>This action cannot be undone.`);
         setConfirmOpen(true);
+    }
+
+    async function handleArchive(group) {
+        const id = group.id || group._id;
+        const endpoint = group.archived ? `/api/groups/${id}/unarchive` : `/api/groups/${id}/archive`;
+        try {
+            await api('PUT', endpoint, null, token, onLogout);
+            showToast(group.archived ? 'Group restored successfully' : 'Group archived successfully');
+            loadData();
+        } catch (err) {
+            showToast(err.message, true);
+        }
     }
 
     async function handleDelete() {
@@ -164,7 +177,13 @@ export default function AdminGroups({ token, onLogout }) {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px', marginBottom: '8px' }}>
-                <span className="slabel" style={{ margin: 0 }}>Groups by Teacher</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <span className="slabel" style={{ margin: 0 }}>Groups by Teacher</span>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <button className={'filter-btn' + (!showArchived ? ' active' : '')} onClick={() => setShowArchived(false)} style={{ padding: '4px 12px' }}>Active</button>
+                        <button className={'filter-btn' + (showArchived ? ' active' : '')} onClick={() => setShowArchived(true)} style={{ padding: '4px 12px' }}>📦 Archived</button>
+                    </div>
+                </div>
                 <button
                     className={`filter-btn ${selectedIds.size > 0 ? 'active' : ''}`}
                     style={{
@@ -232,6 +251,7 @@ export default function AdminGroups({ token, onLogout }) {
                                                 key={g.id || g._id}
                                                 group={g}
                                                 onDelete={handleDeleteClick}
+                                                onArchive={handleArchive}
                                                 selected={selectedIds.has(g.id || g._id)}
                                                 onSelect={toggleSelect}
                                             />

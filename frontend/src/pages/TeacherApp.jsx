@@ -23,6 +23,15 @@ export default function TeacherApp({ token, user, onLogout }) {
     const [avail, setAvail] = useState({ oddDays: {}, evenDays: {} });
     const [savingAvailability, setSavingAvailability] = useState(false);
 
+    // Archive
+    const [showArchived, setShowArchived] = useState(false);
+
+    // Password change
+    const [pwCurrent, setPwCurrent] = useState('');
+    const [pwNew, setPwNew] = useState('');
+    const [pwConfirm, setPwConfirm] = useState('');
+    const [pwSaving, setPwSaving] = useState(false);
+
     useEffect(() => {
         if (user?.teacher?.availability) {
             setAvail({
@@ -45,12 +54,12 @@ export default function TeacherApp({ token, user, onLogout }) {
     const [selectedStage, setSelectedStage] = useState(null);
     const [submitting, setSubmitting] = useState(false);
 
-    useEffect(() => { loadGroups(); }, []);
+    useEffect(() => { loadGroups(); }, [showArchived]);
 
     async function loadGroups() {
         try {
             setGroups(null);
-            const data = await api('GET', '/api/groups', null, token, onLogout);
+            const data = await api('GET', `/api/groups${showArchived ? '?archived=true' : ''}`, null, token, onLogout);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
@@ -342,6 +351,34 @@ export default function TeacherApp({ token, user, onLogout }) {
         }
     };
 
+    async function handleArchive(group) {
+        const id = group.id || group._id;
+        const endpoint = group.archived ? `/api/groups/${id}/unarchive` : `/api/groups/${id}/archive`;
+        try {
+            await api('PUT', endpoint, null, token, onLogout);
+            showToast(group.archived ? 'Group restored successfully' : 'Group archived successfully');
+            loadGroups();
+        } catch (err) {
+            showToast(err.message, true);
+        }
+    }
+
+    async function handlePasswordChange() {
+        if (!pwCurrent || !pwNew || !pwConfirm) { showToast('Please fill in all password fields', true); return; }
+        if (pwNew.length < 6) { showToast('New password must be at least 6 characters', true); return; }
+        if (pwNew !== pwConfirm) { showToast('New passwords do not match', true); return; }
+        setPwSaving(true);
+        try {
+            await api('PUT', '/api/teachers/me/password', { currentPassword: pwCurrent, newPassword: pwNew }, token, onLogout);
+            showToast('Password changed successfully!');
+            setPwCurrent(''); setPwNew(''); setPwConfirm('');
+        } catch (err) {
+            showToast(err.message, true);
+        } finally {
+            setPwSaving(false);
+        }
+    }
+
     return (
         <div className="view active" id="v-teacher-app">
             <Navbar
@@ -355,17 +392,29 @@ export default function TeacherApp({ token, user, onLogout }) {
                 </div>
                 <div className="panel-body">
                     <span className="slabel">Your Groups</span>
-                    <button className="add-btn" onClick={() => setModalOpen(true)}>
-                        <span className="add-icon">+</span>Add New Group
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        <button
+                            className={'filter-btn' + (!showArchived ? ' active' : '')}
+                            onClick={() => setShowArchived(false)}
+                        >Active</button>
+                        <button
+                            className={'filter-btn' + (showArchived ? ' active' : '')}
+                            onClick={() => setShowArchived(true)}
+                        >📦 Archived</button>
+                        {!showArchived && (
+                            <button className="add-btn" onClick={() => setModalOpen(true)}>
+                                <span className="add-icon">+</span>Add New Group
+                            </button>
+                        )}
+                    </div>
                     <div className="groups-grid">
                         {groups === null ? <Skeleton /> : groups.length === 0 ? (
                             <div className="empty-state" style={{ gridColumn: '1/-1' }}>
-                                <div className="empty-line">NO GROUPS</div>
-                                <p>Add your first group above.</p>
+                                <div className="empty-line">{showArchived ? 'NO ARCHIVED GROUPS' : 'NO GROUPS'}</div>
+                                <p>{showArchived ? 'Archive a group to see it here.' : 'Add your first group above.'}</p>
                             </div>
                         ) : groups.map((g, i) => (
-                            <GroupCard key={g.id || g._id} group={g} teacherName={user.teacher.name} index={i} onEdit={() => openEditModal(g)} />
+                            <GroupCard key={g.id || g._id} group={g} teacherName={user.teacher.name} index={i} onEdit={!showArchived ? () => openEditModal(g) : undefined} onArchive={handleArchive} />
                         ))}
                     </div>
                 </div>
@@ -419,6 +468,29 @@ export default function TeacherApp({ token, user, onLogout }) {
                                     );
                                 })}
                             </div>
+                        </div>
+                    </div>
+                    <div className="panel-body" style={{ marginTop: '24px' }}>
+                        <div className="panel-header" style={{ marginBottom: '16px' }}>
+                            <div className="panel-title">CHANGE <span className="y">PASSWORD</span></div>
+                            <div className="panel-subtitle">Update your account password using the form below</div>
+                        </div>
+                        <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                            <div className="f-group" style={{ flex: 1, minWidth: '200px', marginBottom: 0 }}>
+                                <label className="f-label">Current Password</label>
+                                <input className="f-input" type="password" value={pwCurrent} onChange={(e) => setPwCurrent(e.target.value)} />
+                            </div>
+                            <div className="f-group" style={{ flex: 1, minWidth: '200px', marginBottom: 0 }}>
+                                <label className="f-label">New Password</label>
+                                <input className="f-input" type="password" value={pwNew} onChange={(e) => setPwNew(e.target.value)} />
+                            </div>
+                            <div className="f-group" style={{ flex: 1, minWidth: '200px', marginBottom: 0 }}>
+                                <label className="f-label">Confirm New Password</label>
+                                <input className="f-input" type="password" value={pwConfirm} onChange={(e) => setPwConfirm(e.target.value)} />
+                            </div>
+                            <button className="btn-submit" style={{ width: 'auto', padding: '10px 24px', height: '40px' }} onClick={handlePasswordChange} disabled={pwSaving}>
+                                {pwSaving ? 'Saving...' : 'Update Password'}
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -520,6 +592,6 @@ export default function TeacherApp({ token, user, onLogout }) {
                     <button className="btn-cancel" onClick={closeModal}>Cancel</button>
                 </div>
             </Modal>
-        </div>
+        </div >
     );
 }

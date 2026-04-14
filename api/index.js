@@ -98,6 +98,8 @@ app.post('/api/auth/teacher', async (req, res) => {
     if (!username || !password) return res.status(400).json({ error: 'username and password required' });
     const teacher = await Teacher.findOne({ username }).select('+hash');
     if (!teacher || !bcrypt.compareSync(password, teacher.hash)) return res.status(401).json({ error: 'Invalid credentials' });
+    teacher.lastLogin = new Date();
+    await teacher.save();
     res.json({ token: issueToken({ role: 'teacher', tid: teacher.id }), teacher: teacher.toJSON() });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
@@ -127,6 +129,21 @@ app.put('/api/teachers/me/availability', auth, async (req, res) => {
 
     await teacher.save();
     res.json(teacher.toJSON());
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/teachers/me/password', auth, async (req, res) => {
+  try {
+    if (req.user.role !== 'teacher') return res.status(403).json({ error: 'Teachers only' });
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) return res.status(400).json({ error: 'currentPassword and newPassword required' });
+    if (newPassword.length < 6) return res.status(400).json({ error: 'New password must be at least 6 characters' });
+    const teacher = await Teacher.findById(req.user.tid).select('+hash');
+    if (!teacher) return res.status(404).json({ error: 'Not found' });
+    if (!bcrypt.compareSync(currentPassword, teacher.hash)) return res.status(401).json({ error: 'Current password is incorrect' });
+    teacher.hash = bcrypt.hashSync(newPassword, SALT);
+    await teacher.save();
+    res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
@@ -171,8 +188,34 @@ app.delete('/api/teachers/:id', auth, adminOnly, async (req, res) => {
 
 app.get('/api/groups', auth, async (req, res) => {
   try {
+    const showArchived = req.query.archived === 'true';
     const filter = req.user.role === 'admin' ? {} : { tid: req.user.tid };
+    filter.archived = showArchived ? true : { $ne: true };
     res.json((await Group.find(filter).sort({ createdAt: 1 })).map(g => g.toJSON()));
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/groups/:id/archive', auth, async (req, res) => {
+  try {
+    const g = await Group.findById(req.params.id);
+    if (!g) return res.status(404).json({ error: 'Group not found' });
+    if (req.user.role === 'teacher' && g.tid !== req.user.tid) return res.status(403).json({ error: 'Forbidden' });
+    g.archived = true;
+    g.archivedAt = new Date();
+    await g.save();
+    res.json(g.toJSON());
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.put('/api/groups/:id/unarchive', auth, async (req, res) => {
+  try {
+    const g = await Group.findById(req.params.id);
+    if (!g) return res.status(404).json({ error: 'Group not found' });
+    if (req.user.role === 'teacher' && g.tid !== req.user.tid) return res.status(403).json({ error: 'Forbidden' });
+    g.archived = false;
+    g.archivedAt = null;
+    await g.save();
+    res.json(g.toJSON());
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

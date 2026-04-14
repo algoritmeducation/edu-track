@@ -9,6 +9,7 @@ const schema = new mongoose.Schema({
     oddDays: { type: Map, of: String, default: {} },
     evenDays: { type: Map, of: String, default: {} },
   },
+  lastLogin: { type: Date, default: null },
 }, {
   timestamps: true,
   toJSON: {
