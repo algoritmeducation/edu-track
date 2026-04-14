@@ -6,10 +6,20 @@ import TeacherLogin from './pages/TeacherLogin';
 import TeacherApp from './pages/TeacherApp';
 import AdminApp from './pages/AdminApp';
 import NotFound from './pages/NotFound';
+import { isTokenExpired } from './api';
 
 
 function AppContent() {
-    const [token, setToken] = useState(() => localStorage.getItem('token') || null);
+    const [token, setToken] = useState(() => {
+        const savedToken = localStorage.getItem('token');
+        // Clear token immediately if it's expired — do NOT let user into a protected page
+        if (isTokenExpired(savedToken)) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            return null;
+        }
+        return savedToken;
+    });
     const [user, setUser] = useState(() => {
         try {
             const savedUser = localStorage.getItem('user');

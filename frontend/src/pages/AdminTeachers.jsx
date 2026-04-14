@@ -8,7 +8,7 @@ import GroupRow from '../components/GroupRow';
 import Modal from '../components/Modal';
 import ConfirmModal from '../components/ConfirmModal';
 
-export default function AdminTeachers({ token }) {
+export default function AdminTeachers({ token, onLogout }) {
     const [teachers, setTeachers] = useState(null);
     const [allGroups, setAllGroups] = useState(null);
     const [sortBy, setSortBy] = useState('default');
@@ -47,8 +47,8 @@ export default function AdminTeachers({ token }) {
         try {
             setTeachers(null); setAllGroups(null);
             const [t, g] = await Promise.all([
-                api('GET', '/api/teachers', null, token),
-                api('GET', '/api/groups', null, token),
+                api('GET', '/api/teachers', null, token, onLogout),
+                api('GET', '/api/groups', null, token, onLogout),
             ]);
             setTeachers(t);
             setAllGroups(g);
@@ -95,12 +95,12 @@ export default function AdminTeachers({ token }) {
             if (editingId) {
                 const body = { name: tmName.trim(), username: tmUsername.trim(), subject: subjects };
                 if (tmPass) body.password = tmPass;
-                await api('PUT', '/api/teachers/' + editingId, body, token);
+                await api('PUT', '/api/teachers/' + editingId, body, token, onLogout);
                 showToast('Teacher account updated');
             } else {
                 await api('POST', '/api/teachers', {
                     name: tmName.trim(), username: tmUsername.trim(), password: tmPass, subject: subjects,
-                }, token);
+                }, token, onLogout);
                 showToast('Teacher account created');
             }
             closeModal();
@@ -129,7 +129,7 @@ export default function AdminTeachers({ token }) {
     async function handleDelete() {
         setDeleting(true);
         try {
-            await api('DELETE', '/api/teachers/' + pendingDeleteId, null, token);
+            await api('DELETE', '/api/teachers/' + pendingDeleteId, null, token, onLogout);
             setConfirmOpen(false); setPendingDeleteId(null);
             loadData();
             showToast('Teacher account deleted');

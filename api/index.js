@@ -69,7 +69,7 @@ const LPL = 13;
 const validLangs = Object.keys(PC);
 const ADMIN_USER = process.env.ADMIN_USERNAME || 'moonteek';
 const ADMIN_PASS = process.env.ADMIN_PASSWORD || '702009';
-const issueToken = payload => jwt.sign(payload, SECRET, { expiresIn: '8h' });
+const issueToken = payload => jwt.sign(payload, SECRET, { expiresIn: '30d' });
 
 function auth(req, res, next) {
   const header = req.headers.authorization;

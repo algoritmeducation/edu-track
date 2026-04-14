@@ -50,7 +50,7 @@ export default function TeacherApp({ token, user, onLogout }) {
     async function loadGroups() {
         try {
             setGroups(null);
-            const data = await api('GET', '/api/groups', null, token);
+            const data = await api('GET', '/api/groups', null, token, onLogout);
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
@@ -69,7 +69,7 @@ export default function TeacherApp({ token, user, onLogout }) {
                     try {
                         const updated = await api('PUT', `/api/groups/${g.id || g._id}`, {
                             level: newLevel, start: newStart, exam: newExam, doneInLevel: newDoneInLevel
-                        }, token);
+                        }, token, onLogout);
                         return updated;
                     } catch { return g; }
                 }
@@ -79,7 +79,7 @@ export default function TeacherApp({ token, user, onLogout }) {
                 const storedTotal = totalDone(g.level, g.doneInLevel);
                 if (autoTotal > storedTotal) {
                     try {
-                        const updated = await api('PUT', `/api/groups/${g.id || g._id}`, { level: autoLevel, doneInLevel: autoDone }, token);
+                        const updated = await api('PUT', `/api/groups/${g.id || g._id}`, { level: autoLevel, doneInLevel: autoDone }, token, onLogout);
                         return updated;
                     } catch { return g; }
                 }
@@ -250,10 +250,10 @@ export default function TeacherApp({ token, user, onLogout }) {
                 students: parseInt(fStudents), level: selectedStage, doneInLevel, days: fDays
             };
             if (editingGroup) {
-                await api('PUT', `/api/groups/${editingGroup.id || editingGroup._id}`, payload, token);
+                await api('PUT', `/api/groups/${editingGroup.id || editingGroup._id}`, payload, token, onLogout);
                 showToast('Group updated successfully');
             } else {
-                await api('POST', '/api/groups', payload, token);
+                await api('POST', '/api/groups', payload, token, onLogout);
                 showToast('Group added successfully');
             }
             closeModal();
@@ -333,7 +333,7 @@ export default function TeacherApp({ token, user, onLogout }) {
     const saveAvailability = async () => {
         setSavingAvailability(true);
         try {
-            await api('PUT', '/api/teachers/me/availability', avail, token);
+            await api('PUT', '/api/teachers/me/availability', avail, token, onLogout);
             showToast('Schedule saved successfully!');
         } catch (err) {
             showToast(err.message, true);

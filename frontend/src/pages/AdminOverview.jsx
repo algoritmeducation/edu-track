@@ -4,7 +4,7 @@ import { PC, LPL, totalDone, totalLessons, pct, tagCls, MODULES } from '../const
 import { useToast } from '../components/Toast';
 import Skeleton from '../components/Skeleton';
 
-export default function AdminOverview({ token }) {
+export default function AdminOverview({ token, onLogout }) {
     const [stats, setStats] = useState(null);
     const showToast = useToast();
 
@@ -13,7 +13,7 @@ export default function AdminOverview({ token }) {
     async function loadStats() {
         try {
             setStats(null);
-            const s = await api('GET', '/api/stats', null, token);
+            const s = await api('GET', '/api/stats', null, token, onLogout);
             setStats(s);
         } catch (err) {
             showToast('Failed to load stats: ' + err.message, true);

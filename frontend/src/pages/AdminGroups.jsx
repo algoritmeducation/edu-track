@@ -6,7 +6,7 @@ import Skeleton from '../components/Skeleton';
 import GroupRow from '../components/GroupRow';
 import ConfirmModal from '../components/ConfirmModal';
 
-export default function AdminGroups({ token }) {
+export default function AdminGroups({ token, onLogout }) {
     const [teachers, setTeachers] = useState(null);
     const [allGroups, setAllGroups] = useState(null);
     const [langFilter, setLangFilter] = useState('all');
@@ -31,8 +31,8 @@ export default function AdminGroups({ token }) {
         try {
             setTeachers(null); setAllGroups(null);
             const [t, g] = await Promise.all([
-                api('GET', '/api/teachers', null, token),
-                api('GET', '/api/groups', null, token),
+                api('GET', '/api/teachers', null, token, onLogout),
+                api('GET', '/api/groups', null, token, onLogout),
             ]);
             setTeachers(t);
             setAllGroups(g);
@@ -78,7 +78,7 @@ export default function AdminGroups({ token }) {
     async function handleDelete() {
         setDeleting(true);
         try {
-            await api('DELETE', '/api/groups/' + pendingDeleteId, null, token);
+            await api('DELETE', '/api/groups/' + pendingDeleteId, null, token, onLogout);
             setConfirmOpen(false); setPendingDeleteId(null);
             loadData();
             showToast('Group deleted successfully');
@@ -99,7 +99,7 @@ export default function AdminGroups({ token }) {
     async function handleBulkDelete() {
         setBulkDeleting(true);
         try {
-            const result = await api('POST', '/api/groups/bulk-delete', { ids: Array.from(selectedIds) }, token);
+            const result = await api('POST', '/api/groups/bulk-delete', { ids: Array.from(selectedIds) }, token, onLogout);
             setBulkConfirmOpen(false);
             setSelectedIds(new Set());
             loadData();

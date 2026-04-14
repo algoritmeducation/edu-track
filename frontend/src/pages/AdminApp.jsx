@@ -36,7 +36,7 @@ export default function AdminApp({ token, onLogout }) {
                             <div className="panel-title">ADMIN <span className="y">OVERVIEW</span></div>
                             <div className="panel-subtitle">Platform-wide statistics and summary</div>
                         </div>
-                        <AdminOverview token={token} />
+                        <AdminOverview token={token} onLogout={onLogout} />
                     </div>
                 )}
                 {activeTab === 'groups' && (
@@ -45,7 +45,7 @@ export default function AdminApp({ token, onLogout }) {
                             <div className="panel-title">ALL <span className="y">GROUPS</span></div>
                             <div className="panel-subtitle">Filter and browse every group across all teachers</div>
                         </div>
-                        <AdminGroups token={token} />
+                        <AdminGroups token={token} onLogout={onLogout} />
                     </div>
                 )}
                 {activeTab === 'teachers' && (
@@ -54,7 +54,7 @@ export default function AdminApp({ token, onLogout }) {
                             <div className="panel-title">TEACHER <span className="y">PROFILES</span></div>
                             <div className="panel-subtitle">Create, manage teacher accounts and view their groups</div>
                         </div>
-                        <AdminTeachers token={token} />
+                        <AdminTeachers token={token} onLogout={onLogout} />
                     </div>
                 )}
                 {activeTab === 'schedule' && (
@@ -63,7 +63,7 @@ export default function AdminApp({ token, onLogout }) {
                             <div className="panel-title">TEACHER <span className="y">SCHEDULE</span></div>
                             <div className="panel-subtitle">Comprehensive overview of all teachers' availability and lessons</div>
                         </div>
-                        <AdminSchedule token={token} />
+                        <AdminSchedule token={token} onLogout={onLogout} />
                     </div>
                 )}
             </div>
